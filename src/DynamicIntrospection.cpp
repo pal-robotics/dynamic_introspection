@@ -26,12 +26,38 @@ void copyEigenMatrix2Message(const Eigen::MatrixXd &in, dynamic_introspection::M
 }
 
 DynamicIntrospection::DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic):
-  node_handle_(nh), configured_(false){
+  node_handle_(nh), configured_(false), openedBag_(false){
   introspectionPub_ =  nh.advertise<dynamic_introspection::IntrospectionMsg>(topic, 10);
 }
 
+DynamicIntrospection::~DynamicIntrospection(){
+  closeBag();
+}
 
-void DynamicIntrospection::publishData(){
+void DynamicIntrospection::openBag(std::string fileName){
+  bag_.open(fileName, rosbag::bagmode::Write);
+  openedBag_ = true;
+}
+
+void DynamicIntrospection::closeBag(){
+  bag_.close();
+  openedBag_ = false;
+}
+
+void DynamicIntrospection::publishDataBag(){
+  if(!openedBag_){
+    ROS_ERROR_STREAM("Bag is not open");
+  }
+  generateMessage();
+  bag_.write("dynamic_introspection", ros::Time::now(), introspectionMessage_);
+}
+
+void DynamicIntrospection::publishDataTopic(){
+  generateMessage();
+  introspectionPub_.publish(introspectionMessage_);
+}
+
+void DynamicIntrospection::generateMessage(){
 
   introspectionMessage_.ints.resize(registeredInt_.size());
   introspectionMessage_.doubles.resize(registeredDouble_.size());
@@ -43,7 +69,7 @@ void DynamicIntrospection::publishData(){
     introspectionMessage_.vectors[i].value.resize(registeredVector_[i].second->rows());
   }
 
-  for(unsigned int i=0; i<registeredVector_.size(); ++i){
+  for(unsigned int i=0; i<registeredMatrix_.size(); ++i){
     introspectionMessage_.matrixs[i].value.resize(registeredMatrix_[i].second->rows()*registeredMatrix_[i].second->cols());
   }
 
@@ -80,31 +106,34 @@ void DynamicIntrospection::publishData(){
     mp.value.resize(mp.rows*mp.cols);
     copyEigenMatrix2Message(*registeredMatrix_[i].second, mp);
   }
-
-  introspectionPub_.publish(introspectionMessage_);
 }
 
 void DynamicIntrospection::registerVariable(int *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered int");
   std::pair<std::string, int*> p(id, variable);
   registeredInt_.push_back(p);
 }
 
 void DynamicIntrospection::registerVariable(double *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered double");
   std::pair<std::string, double*> p(id, variable);
   registeredDouble_.push_back(p);
 }
 
 void DynamicIntrospection::registerVariable(bool *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered bool");
   std::pair<std::string, bool*> p(id, variable);
   registeredBool_.push_back(p);
 }
 
 void DynamicIntrospection::registerVariable(Eigen::VectorXd *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered Vector");
   std::pair<std::string, Eigen::VectorXd*> p(id, variable);
   registeredVector_.push_back(p);
 }
 
 void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered Matrix");
   std::pair<std::string, Eigen::MatrixXd*> p(id, variable);
   registeredMatrix_.push_back(p);
 }

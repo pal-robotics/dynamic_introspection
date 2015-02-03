@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <ros/ros.h>
+#include <rosbag/bag.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 
 class DynamicIntrospection{
@@ -10,6 +11,8 @@ class DynamicIntrospection{
 public:
 
   DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
+
+  ~DynamicIntrospection();
 
   void registerVariable(int *variable, std::string id);
 
@@ -21,17 +24,25 @@ public:
 
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
 
-  /*
-  void generateConfigDescription();
-  */
 
-  void publishData();
+  void generateMessage();
+
+  void publishDataTopic();
+
+  void publishDataBag();
+
+  void closeBag();
+
+  void openBag(std::string fileName);
 
 private:
+  bool openedBag_;
+  bool configured_;
+
   ros::NodeHandle node_handle_;
   ros::Publisher introspectionPub_;
 
-  bool configured_;
+  rosbag::Bag bag_;
 
   //Registered variables
   std::vector< std::pair<std::string, int*> > registeredInt_;

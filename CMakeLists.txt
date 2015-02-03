@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dynamic_introspection)
 
-find_package(catkin REQUIRED COMPONENTS roscpp message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp message_generation rosbag)
 
 find_package(Eigen REQUIRED)
 
@@ -21,7 +21,7 @@ generate_messages()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp
+  CATKIN_DEPENDS roscpp rosbag
 )
 
 include_directories(
@@ -31,7 +31,11 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} src/DynamicIntrospection.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(DynamicIntrospectionExample test/DynamicIntrospectionExample.cpp)
 target_link_libraries(DynamicIntrospectionExample ${PROJECT_NAME} ${catkin_LIBRARIES})
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
+add_executable(DynamicIntrospectionBagExample test/DynamicIntrospectionBagExample.cpp)
+target_link_libraries(DynamicIntrospectionBagExample ${PROJECT_NAME} ${catkin_LIBRARIES})
