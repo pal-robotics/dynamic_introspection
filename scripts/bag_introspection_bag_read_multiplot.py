@@ -8,7 +8,7 @@ for topic, msg, t in bag.read_messages(topics=['dynamic_introspection']):
     number_vectors = len(msg.vectors)
     index = 1
     for v in msg.vectors:
-       print v
+       print v 
        plt.subplot(number_vectors, 1, index)
        plt.plot(v.value)
        plt.title(v.name)
