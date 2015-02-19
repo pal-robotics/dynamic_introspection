@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 bag = rosbag.Bag('test.bag')
 for topic, msg, t in bag.read_messages(topics=['dynamic_introspection']):
-    print msg
+    #print msg
     number_vectors = len(msg.vectors)
     index = 1
     for v in msg.vectors:
