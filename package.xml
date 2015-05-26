@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamic_introspection</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>The dynamic_introspection package</description>
 
   <maintainer email="hilario@todo.todo">hilario</maintainer>
