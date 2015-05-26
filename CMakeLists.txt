@@ -22,6 +22,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp rosbag
+  DEPENDS Eigen
 )
 
 include_directories(
