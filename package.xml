@@ -4,9 +4,9 @@
   <version>0.0.1</version>
   <description>The dynamic_introspection package</description>
 
-  <maintainer email="hilario@todo.todo">hilario</maintainer>
+  <maintainer email="hilario.tome@pal-robotics.com">Hilario Tomé</maintainer>
 
-  <license>TODO</license>
+  <license>Proprietary</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   
