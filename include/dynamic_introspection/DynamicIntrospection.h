@@ -20,10 +20,11 @@ public:
 
   void registerVariable(bool *variable, std::string id);
 
+  void registerVariable(Eigen::Vector3d *variable, std::string id);
+
   void registerVariable(Eigen::VectorXd *variable, std::string id);
 
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
-
 
   void generateMessage();
 
@@ -49,6 +50,7 @@ private:
   std::vector< std::pair<std::string, double*> > registeredDouble_;
   std::vector<std::pair<std::string, bool*> > registeredBool_;
   std::vector<std::pair<std::string, Eigen::VectorXd*> > registeredVector_;
+  std::vector<std::pair<std::string, Eigen::Vector3d*> > registered3dVector_;
   std::vector<std::pair<std::string, Eigen::MatrixXd*> > registeredMatrix_;
 
   dynamic_introspection::IntrospectionMsg introspectionMessage_;

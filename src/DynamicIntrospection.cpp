@@ -63,6 +63,7 @@ void DynamicIntrospection::generateMessage(){
   introspectionMessage_.doubles.resize(registeredDouble_.size());
   introspectionMessage_.bools.resize(registeredBool_.size());
   introspectionMessage_.vectors.resize(registeredVector_.size());
+  introspectionMessage_.vectors3d.resize(registered3dVector_.size());
   introspectionMessage_.matrixs.resize(registeredMatrix_.size());
 
   for(unsigned int i=0; i<registeredVector_.size(); ++i){
@@ -89,6 +90,14 @@ void DynamicIntrospection::generateMessage(){
     dynamic_introspection::BoolParameter &bp = introspectionMessage_.bools[i];
     bp.name = registeredBool_[i].first;
     bp.value = *registeredBool_[i].second;
+  }
+
+  for(unsigned int i=0; i<registered3dVector_.size(); ++i){
+    dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i];
+    vp.name = registered3dVector_[i].first;
+    assert(registered3dVector_[i].second->rows() == 3);
+    vp.value.resize(registered3dVector_[i].second->rows());
+    copyEigenVector2Message(*registered3dVector_[i].second, vp);
   }
 
   for(unsigned int i=0; i<registeredVector_.size(); ++i){
@@ -124,6 +133,12 @@ void DynamicIntrospection::registerVariable(bool *variable, std::string id){
   ROS_DEBUG_STREAM("Registered bool");
   std::pair<std::string, bool*> p(id, variable);
   registeredBool_.push_back(p);
+}
+
+void DynamicIntrospection::registerVariable(Eigen::Vector3d *variable, std::string id){
+  ROS_DEBUG_STREAM("Registered Vector3");
+  std::pair<std::string, Eigen::Vector3d*> p(id, variable);
+  registered3dVector_.push_back(p);
 }
 
 void DynamicIntrospection::registerVariable(Eigen::VectorXd *variable, std::string id){
