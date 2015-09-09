@@ -42,6 +42,7 @@ target_link_libraries(DynamicIntrospectionExample ${PROJECT_NAME} ${catkin_LIBRA
 add_executable(DynamicIntrospectionBagExample test/DynamicIntrospectionBagExample.cpp)
 target_link_libraries(DynamicIntrospectionBagExample ${PROJECT_NAME} ${catkin_LIBRARIES})
 
+add_subdirectory(singleton_tests)
 
 install(TARGETS ${PROJECT_NAME}
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
