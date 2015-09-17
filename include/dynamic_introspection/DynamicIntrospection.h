@@ -23,7 +23,7 @@
 class DynamicIntrospection{
 
 public:
-
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
 
   ~DynamicIntrospection();
