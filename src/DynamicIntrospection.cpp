@@ -5,6 +5,8 @@
 #include <dynamic_introspection/VectorParameter.h>
 #include <dynamic_introspection/MatrixParameter.h>
 
+DynamicIntrospection* DynamicIntrospection::m_pInstance = NULL;
+
 void copyEigenVector2Message(const Eigen::VectorXd &in, dynamic_introspection::VectorParameter &out){
  assert(in.rows() == out.value.size());
  for(unsigned int i=0; i<in.rows(); ++i){
@@ -25,9 +27,23 @@ void copyEigenMatrix2Message(const Eigen::MatrixXd &in, dynamic_introspection::M
   }
 }
 
+
+DynamicIntrospection* DynamicIntrospection::Instance(){
+     if (!m_pInstance){   // Only allow one instance of class to be generated.
+        m_pInstance = new DynamicIntrospection;
+      }
+     return m_pInstance;
+}
+
+/*
 DynamicIntrospection::DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic):
   node_handle_(nh), configured_(false), openedBag_(false){
   introspectionPub_ =  nh.advertise<dynamic_introspection::IntrospectionMsg>(topic, 10);
+}
+*/
+DynamicIntrospection::DynamicIntrospection(){
+  node_handle_ = ros::NodeHandle();
+  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
 }
 
 DynamicIntrospection::~DynamicIntrospection(){

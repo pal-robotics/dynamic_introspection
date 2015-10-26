@@ -1,5 +1,7 @@
 #include <ros/ros.h>
 #include <dynamic_introspection/DynamicIntrospection.h>
+#include "testClassA.h"
+#include "testClassB.h"
 
 int main(int argc, char **argv) {
 
@@ -12,23 +14,16 @@ int main(int argc, char **argv) {
     ros::console::notifyLoggerLevelsChanged();
   }
 
-  bool bool_test = false;
+  boost::shared_ptr<TestClassBase> tA(new TestClassA());
+  boost::shared_ptr<TestClassBase> tB(new TestClassB());
 
-  //DynamicIntrospection di(nh, "debug_test");
-
-  REGISTER_VARIABLE(&bool_test, "bool_test");
-
-  Eigen::MatrixXd matrix_test(5,5);
-  matrix_test.setIdentity();
-  REGISTER_VARIABLE(&matrix_test, "matrix_test");
-
-  Eigen::VectorXd vector_test(5);
-  vector_test.setRandom();
-  REGISTER_VARIABLE(&vector_test, "vector_test");
 
   ROS_INFO("Spinning node");
 
   while(nh.ok()){
+    tA->update();
+    tB->update();
+
     std::cerr<<"*********"<<std::endl;
     PUBLISH_DEBUG_DATA_TOPIC
     ros::spinOnce();

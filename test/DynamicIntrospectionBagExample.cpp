@@ -15,31 +15,31 @@ int main(int argc, char **argv) {
 
   bool bool_test = false;
 
-  DynamicIntrospection di(nh, "debug_test");
+ // DynamicIntrospection di(nh, "debug_test");
 
-  di.registerVariable(&bool_test, "bool_test");
+  REGISTER_VARIABLE(&bool_test, "bool_test")
 
   Eigen::MatrixXd matrix_test(5,5);
   matrix_test.setIdentity();
-  di.registerVariable(&matrix_test, "matrix_test");
+  REGISTER_VARIABLE(&matrix_test, "matrix_test")
 
   Eigen::VectorXd vector_test(5);
   vector_test.setRandom();
-  di.registerVariable(&vector_test, "vector_test");
+  REGISTER_VARIABLE(&vector_test, "vector_test")
 
   Eigen::VectorXd vector_test2(5);
   vector_test2.setRandom();
-  di.registerVariable(&vector_test2, "vector_test2");
+  REGISTER_VARIABLE(&vector_test2, "vector_test2")
 
   Eigen::VectorXd vector_test3(5);
   vector_test3.setRandom();
-  di.registerVariable(&vector_test3, "vector_test3");
+  REGISTER_VARIABLE(&vector_test3, "vector_test3")
 
   ROS_INFO("Spinning node");
 
-  di.openBag("test.bag");
-  di.publishDataBag();
-  di.closeBag();
+  OPEN_BAG("test.bag")
+  PUBLISH_DEBUG_DATA_BAG
+  CLOSE_BAG
 
 
   return 0;

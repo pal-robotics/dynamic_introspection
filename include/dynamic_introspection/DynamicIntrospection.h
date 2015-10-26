@@ -24,7 +24,7 @@ class DynamicIntrospection{
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
+  static DynamicIntrospection* Instance();
 
   ~DynamicIntrospection();
 
@@ -51,6 +51,11 @@ public:
   void openBag(std::string fileName);
 
 private:
+  static DynamicIntrospection* m_pInstance;
+
+  DynamicIntrospection();
+  //DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
+
   bool openedBag_;
   bool configured_;
 
@@ -72,5 +77,24 @@ private:
 };
 
 typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
+
+
+#define REGISTER_VARIABLE(VARIABLE, ID)                               \
+   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
+
+#define OPEN_BAG(BAG_NAME)                                            \
+   DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
+
+#define PUBLISH_DEBUG_DATA_BAG                                        \
+   DynamicIntrospection::Instance()->publishDataBag();                \
+
+#define PUBLISH_DEBUG_DATA_TOPIC                                        \
+   DynamicIntrospection::Instance()->publishDataTopic();                \
+
+#define CLOSE_BAG                                                     \
+   DynamicIntrospection::Instance()->closeBag();                      \
+
+
+
 
 #endif
