@@ -1,3 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////
+
+// Copyright (C) 2014, 2015 PAL Robotics S.L.
+
+// All rights reserved.
+
+//////////////////////////////////////////////////////////////////////////////
+
+// Author Hilario Tomé
+
 #ifndef _DYNAMIC_INTROSPECTION_
 #define _DYNAMIC_INTROSPECTION_
 
@@ -6,10 +16,14 @@
 #include <rosbag/bag.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 
+/**
+ * @brief The DynamicIntrospection class allows to do dynamic instrospection of different
+ * c++ types through ros topics and rosbag
+ */
 class DynamicIntrospection{
 
 public:
-
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
 
   ~DynamicIntrospection();

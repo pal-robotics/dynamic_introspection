@@ -2,6 +2,11 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.2 (2015-06-10)
+------------------
+* Added license and documentation
+* Contributors: Hilario Tome
+
 0.0.1 (2015-05-26)
 ------------------
 * Added install targets
