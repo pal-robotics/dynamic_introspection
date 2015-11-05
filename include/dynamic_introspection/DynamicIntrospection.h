@@ -29,16 +29,18 @@ public:
   ~DynamicIntrospection();
 
   void registerVariable(int *variable, std::string id);
-
   void registerVariable(double *variable, std::string id);
-
   void registerVariable(bool *variable, std::string id);
-
   void registerVariable(Eigen::Vector3d *variable, std::string id);
-
   void registerVariable(Eigen::VectorXd *variable, std::string id);
-
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
+
+  void unRegisterVariable(int *variable, std::string id);
+  void unRegisterVariable(double *variable, std::string id);
+  void unRegisterVariable(bool *variable, std::string id);
+  void unRegisterVariable(Eigen::Vector3d *variable, std::string id);
+  void unRegisterVariable(Eigen::VectorXd *variable, std::string id);
+  void unRegisterVariable(Eigen::MatrixXd *variable, std::string id);
 
   void generateMessage();
 
@@ -81,6 +83,9 @@ typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 
 #define REGISTER_VARIABLE(VARIABLE, ID)                               \
    DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
+
+#define UNREGISTER_VARIABLE(VARIABLE, ID)                             \
+   DynamicIntrospection::Instance()->unRegisterVariable(VARIABLE, ID);  \
 
 #define OPEN_BAG(BAG_NAME)                                            \
    DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
