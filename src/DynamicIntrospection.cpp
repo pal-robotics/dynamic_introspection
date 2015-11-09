@@ -66,8 +66,16 @@ DynamicIntrospection::DynamicIntrospection(ros::NodeHandle &nh, const std::strin
 }
 */
 DynamicIntrospection::DynamicIntrospection(){
+  if(ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug)){
+    ros::console::notifyLoggerLevelsChanged();
+  }
   node_handle_ = ros::NodeHandle();
   introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
+}
+
+void DynamicIntrospection::setOutputTopic(const std::string &outputTopic){
+  introspectionPub_.shutdown();
+  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
 }
 
 DynamicIntrospection::~DynamicIntrospection(){

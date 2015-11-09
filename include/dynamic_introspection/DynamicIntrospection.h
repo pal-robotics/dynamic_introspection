@@ -42,6 +42,8 @@ public:
   void unRegisterVariable(Eigen::VectorXd *variable, std::string id);
   void unRegisterVariable(Eigen::MatrixXd *variable, std::string id);
 
+  void setOutputTopic(const std::string &outputTopic);
+
   void generateMessage();
 
   void publishDataTopic();
@@ -84,7 +86,7 @@ typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 #define REGISTER_VARIABLE(VARIABLE, ID)                               \
    DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
 
-#define UNREGISTER_VARIABLE(VARIABLE, ID)                             \
+#define UNREGISTER_VARIABLE(VARIABLE, ID)                               \
    DynamicIntrospection::Instance()->unRegisterVariable(VARIABLE, ID);  \
 
 #define OPEN_BAG(BAG_NAME)                                            \
@@ -99,7 +101,8 @@ typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 #define CLOSE_BAG                                                     \
    DynamicIntrospection::Instance()->closeBag();                      \
 
-
+#define CONFIGURE_OUTPUT_TOPIC(TOPIC_NAME)                            \
+   DynamicIntrospection::Instance()->setOutputTopic(TOPIC_NAME);      \
 
 
 #endif
