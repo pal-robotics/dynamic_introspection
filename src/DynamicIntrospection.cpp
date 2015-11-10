@@ -4,6 +4,15 @@
 #include <dynamic_introspection/IntParameter.h>
 #include <dynamic_introspection/VectorParameter.h>
 #include <dynamic_introspection/MatrixParameter.h>
+#include <exception>
+
+struct ExistingVariableException : public std::exception
+{
+  const char * what () const throw ()
+  {
+    return "Registering an existing variable";
+  }
+};
 
 template<typename C>
 bool contains(const std::vector<std::pair<std::string, C*> > & c, const std::string& e)
@@ -168,6 +177,7 @@ void DynamicIntrospection::generateMessage(){
 void DynamicIntrospection::registerVariable(int *variable, std::string id){
   if(contains(registeredInt_, id)){
     ROS_ERROR_STREAM("Int : "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
    ROS_DEBUG_STREAM("Registered int: "<<id);
@@ -179,6 +189,7 @@ void DynamicIntrospection::registerVariable(int *variable, std::string id){
 void DynamicIntrospection::registerVariable(double *variable, std::string id){
   if(contains(registeredDouble_, id)){
     ROS_ERROR_STREAM("Double : "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
    ROS_DEBUG_STREAM("Registered double: "<<id);
@@ -190,6 +201,7 @@ void DynamicIntrospection::registerVariable(double *variable, std::string id){
 void DynamicIntrospection::registerVariable(bool *variable, std::string id){
   if(contains(registeredBool_, id)){
     ROS_ERROR_STREAM("Bool: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered bool: "<<id);
@@ -201,6 +213,7 @@ void DynamicIntrospection::registerVariable(bool *variable, std::string id){
 void DynamicIntrospection::registerVariable(Eigen::Vector3d *variable, std::string id){
   if(!contains(registered3dVector_, id)){
     ROS_ERROR_STREAM("Vector3: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered Vector3: "<<id);
@@ -212,6 +225,7 @@ void DynamicIntrospection::registerVariable(Eigen::Vector3d *variable, std::stri
 void DynamicIntrospection::registerVariable(Eigen::VectorXd *variable, std::string id){
   if(contains(registeredVector_, id)){
     ROS_ERROR_STREAM("Vector: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered Vector: "<<id);
@@ -223,6 +237,7 @@ void DynamicIntrospection::registerVariable(Eigen::VectorXd *variable, std::stri
 void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::string id){
   if(contains(registeredMatrix_, id)){
     ROS_ERROR_STREAM("Matrix: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered Matrix: "<<id);
