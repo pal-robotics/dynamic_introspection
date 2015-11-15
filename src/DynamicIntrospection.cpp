@@ -88,6 +88,7 @@ void DynamicIntrospection::setOutputTopic(const std::string &outputTopic){
 }
 
 DynamicIntrospection::~DynamicIntrospection(){
+  introspectionPub_.shutdown();
   closeBag();
 }
 
@@ -211,7 +212,7 @@ void DynamicIntrospection::registerVariable(bool *variable, std::string id){
 }
 
 void DynamicIntrospection::registerVariable(Eigen::Vector3d *variable, std::string id){
-  if(!contains(registered3dVector_, id)){
+  if(contains(registered3dVector_, id)){
     ROS_ERROR_STREAM("Vector3: "<<id<<" has allreday been registered");
     throw ExistingVariableException();
   }
