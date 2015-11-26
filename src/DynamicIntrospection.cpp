@@ -14,6 +14,14 @@ struct ExistingVariableException : public std::exception
   }
 };
 
+struct DoesNotExistingVariableException : public std::exception
+{
+  const char * what () const throw ()
+  {
+    return "Trying to delete a variable that is not registered";
+  }
+};
+
 template<typename C>
 bool contains(const std::vector<std::pair<std::string, C*> > & c, const std::string& e)
 {
@@ -252,6 +260,7 @@ void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::stri
 void DynamicIntrospection::unRegisterVariable(int *variable, std::string id){
   if(!contains(registeredInt_, id)){
     ROS_ERROR_STREAM("Int : "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
    std::pair<std::string, int*> p(id, variable);
@@ -269,6 +278,7 @@ void DynamicIntrospection::unRegisterVariable(int *variable, std::string id){
 void DynamicIntrospection::unRegisterVariable(double *variable, std::string id){
   if(!contains(registeredDouble_, id)){
     ROS_ERROR_STREAM("Double : "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
     std::pair<std::string, double*> p(id, variable);
@@ -286,6 +296,7 @@ void DynamicIntrospection::unRegisterVariable(double *variable, std::string id){
 void DynamicIntrospection::unRegisterVariable(bool *variable, std::string id){
   if(!contains(registeredBool_, id)){
     ROS_ERROR_STREAM("Bool: "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
     std::pair<std::string, bool*> p(id, variable);
@@ -303,6 +314,7 @@ void DynamicIntrospection::unRegisterVariable(bool *variable, std::string id){
 void DynamicIntrospection::unRegisterVariable(Eigen::Vector3d *variable, std::string id){
   if(!contains(registered3dVector_, id)){
     ROS_ERROR_STREAM("Vector3: "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
     std::pair<std::string, Eigen::Vector3d*> p(id, variable);
@@ -320,6 +332,7 @@ void DynamicIntrospection::unRegisterVariable(Eigen::Vector3d *variable, std::st
 void DynamicIntrospection::unRegisterVariable(Eigen::VectorXd *variable, std::string id){
   if(!contains(registeredVector_, id)){
     ROS_ERROR_STREAM("Vector: "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
     std::pair<std::string, Eigen::VectorXd*> p(id, variable);
@@ -337,6 +350,7 @@ void DynamicIntrospection::unRegisterVariable(Eigen::VectorXd *variable, std::st
 void DynamicIntrospection::unRegisterVariable(Eigen::MatrixXd *variable, std::string id){
   if(!contains(registeredMatrix_, id)){
     ROS_ERROR_STREAM("Matrix: "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
   }
   else{
     std::pair<std::string, Eigen::MatrixXd*> p(id, variable);

@@ -31,6 +31,7 @@ public:
   void registerVariable(int *variable, std::string id);
   void registerVariable(double *variable, std::string id);
   void registerVariable(bool *variable, std::string id);
+  //void registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
   void registerVariable(Eigen::Vector3d *variable, std::string id);
   void registerVariable(Eigen::VectorXd *variable, std::string id);
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
@@ -38,6 +39,7 @@ public:
   void unRegisterVariable(int *variable, std::string id);
   void unRegisterVariable(double *variable, std::string id);
   void unRegisterVariable(bool *variable, std::string id);
+  //void unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
   void unRegisterVariable(Eigen::Vector3d *variable, std::string id);
   void unRegisterVariable(Eigen::VectorXd *variable, std::string id);
   void unRegisterVariable(Eigen::MatrixXd *variable, std::string id);
