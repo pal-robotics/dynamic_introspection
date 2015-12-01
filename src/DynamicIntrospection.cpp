@@ -50,7 +50,7 @@ DynamicIntrospection* DynamicIntrospection::m_pInstance = NULL;
 
 void copyEigenVector2Message(const Eigen::VectorXd &in, dynamic_introspection::VectorParameter &out){
   assert(in.rows() == out.value.size());
-  for(unsigned int i=0; i<in.rows(); ++i){
+  for(size_t i=0; i<in.rows(); ++i){
     out.value[i] = in(i);
   }
 
@@ -61,8 +61,8 @@ void copyEigenMatrix2Message(const Eigen::MatrixXd &in, dynamic_introspection::M
   assert(in.cols() == out.cols);
   assert(in.rows()*in.cols() == out.value.size());
 
-  for(unsigned int i=0; i<in.rows(); ++i){
-    for(unsigned int j=0; j<in.cols(); ++j){
+  for(size_t i=0; i<in.rows(); ++i){
+    for(size_t j=0; j<in.cols(); ++j){
       out.value[j + in.rows()*i] = in(i,j);
     }
   }
@@ -129,36 +129,36 @@ void DynamicIntrospection::generateMessage(){
   introspectionMessage_.doubles.resize(registeredDouble_.size());
   introspectionMessage_.bools.resize(registeredBool_.size());
   introspectionMessage_.vectors.resize(registeredVector_.size());
-  introspectionMessage_.vectors3d.resize(registered3dVector_.size());
+  introspectionMessage_.vectors3d.resize(registered3dVector_.size() + registered3dMap_.size());
   introspectionMessage_.matrixs.resize(registeredMatrix_.size());
 
-  for(unsigned int i=0; i<registeredVector_.size(); ++i){
+  for(size_t i=0; i<registeredVector_.size(); ++i){
     introspectionMessage_.vectors[i].value.resize(registeredVector_[i].second->rows());
   }
 
-  for(unsigned int i=0; i<registeredMatrix_.size(); ++i){
+  for(size_t i=0; i<registeredMatrix_.size(); ++i){
     introspectionMessage_.matrixs[i].value.resize(registeredMatrix_[i].second->rows()*registeredMatrix_[i].second->cols());
   }
 
-  for(unsigned int i=0; i<registeredInt_.size(); ++i){
+  for(size_t i=0; i<registeredInt_.size(); ++i){
     dynamic_introspection::IntParameter &ip = introspectionMessage_.ints[i];
     ip.name = registeredInt_[i].first;
     ip.value = *registeredInt_[i].second;
   }
 
-  for(unsigned int i=0; i<registeredDouble_.size(); ++i){
+  for(size_t i=0; i<registeredDouble_.size(); ++i){
     dynamic_introspection::DoubleParameter &dp = introspectionMessage_.doubles[i];
     dp.name = registeredDouble_[i].first;
     dp.value = *registeredDouble_[i].second;
   }
 
-  for(unsigned int i=0; i<registeredBool_.size(); ++i){
+  for(size_t i=0; i<registeredBool_.size(); ++i){
     dynamic_introspection::BoolParameter &bp = introspectionMessage_.bools[i];
     bp.name = registeredBool_[i].first;
     bp.value = *registeredBool_[i].second;
   }
 
-  for(unsigned int i=0; i<registered3dVector_.size(); ++i){
+  for(size_t i=0; i<registered3dVector_.size(); ++i){
     dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i];
     vp.name = registered3dVector_[i].first;
     assert(registered3dVector_[i].second->rows() == 3);
@@ -166,14 +166,22 @@ void DynamicIntrospection::generateMessage(){
     copyEigenVector2Message(*registered3dVector_[i].second, vp);
   }
 
-  for(unsigned int i=0; i<registeredVector_.size(); ++i){
+  for(size_t i=0; i<registered3dMap_.size(); ++i){
+    dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i + registered3dVector_.size()];
+    vp.name = registered3dMap_[i].first;
+    assert(registered3dMap_[i].second->rows() == 3);
+    vp.value.resize(registered3dMap_[i].second->rows());
+    copyEigenVector2Message(*registered3dMap_[i].second, vp);
+  }
+
+  for(size_t i=0; i<registeredVector_.size(); ++i){
     dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors[i];
     vp.name = registeredVector_[i].first;
     vp.value.resize(registeredVector_[i].second->rows());
     copyEigenVector2Message(*registeredVector_[i].second, vp);
   }
 
-  for(unsigned int i=0; i<registeredMatrix_.size(); ++i){
+  for(size_t i=0; i<registeredMatrix_.size(); ++i){
     dynamic_introspection::MatrixParameter &mp = introspectionMessage_.matrixs[i];
     mp.name = registeredMatrix_[i].first;
     mp.rows = registeredMatrix_[i].second->rows();
@@ -255,6 +263,19 @@ void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::stri
   }
 }
 
+void DynamicIntrospection::registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
+  if(contains(registered3dMap_, id)){
+    ROS_ERROR_STREAM("Matrix: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
+  }
+  else{
+    ROS_DEBUG_STREAM("Registered Matrix: "<<id);
+    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
+    registered3dMap_.push_back(p);
+  }
+}
+
+
 /////////
 
 void DynamicIntrospection::unRegisterVariable(int *variable, std::string id){
@@ -325,6 +346,24 @@ void DynamicIntrospection::unRegisterVariable(Eigen::Vector3d *variable, std::st
     else{
       ROS_DEBUG_STREAM("Deleting int: "<<id);
       registered3dVector_.erase(registered3dVector_.begin() + index);
+    }
+  }
+}
+
+void DynamicIntrospection::unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
+  if(!contains(registered3dMap_, id)){
+    ROS_ERROR_STREAM("Vector3Map: "<<id<<" has NOT been registered");
+    throw DoesNotExistingVariableException();
+  }
+  else{
+    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
+    int index = indexVector(registered3dMap_, p);
+    if(index < 0){
+      ROS_ERROR_STREAM("Vector3Map : "<<id<<" has has been registered but the pointer to its data does not match!");
+    }
+    else{
+      ROS_DEBUG_STREAM("Deleting int: "<<id);
+      registered3dMap_.erase(registered3dMap_.begin() + index);
     }
   }
 }
