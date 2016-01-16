@@ -131,6 +131,8 @@ void DynamicIntrospection::generateMessage(){
   introspectionMessage_.vectors.resize(registeredVector_.size());
   introspectionMessage_.vectors3d.resize(registered3dVector_.size() + registered3dMap_.size());
   introspectionMessage_.matrixs.resize(registeredMatrix_.size());
+ //std::cerr<<"Registered map size:"<<registered3dMap_.size()<<std::endl;
+ // std::cerr<<"introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
 
   for(size_t i=0; i<registeredVector_.size(); ++i){
     introspectionMessage_.vectors[i].value.resize(registeredVector_[i].second->rows());
@@ -147,7 +149,11 @@ void DynamicIntrospection::generateMessage(){
   }
 
   for(size_t i=0; i<registeredDouble_.size(); ++i){
+   // std::cerr<<registeredDouble_.size()<<" - "<<introspectionMessage_.doubles.size()<<std::endl;
+
+    assert(registeredDouble_.size() == introspectionMessage_.doubles.size());
     dynamic_introspection::DoubleParameter &dp = introspectionMessage_.doubles[i];
+   /// std::cerr<<"Publishing: "<<registeredDouble_[i].first<<std::endl;
     dp.name = registeredDouble_[i].first;
     dp.value = *registeredDouble_[i].second;
   }
@@ -167,6 +173,16 @@ void DynamicIntrospection::generateMessage(){
   }
 
   for(size_t i=0; i<registered3dMap_.size(); ++i){
+    if(registered3dMap_.size() != (introspectionMessage_.vectors3d.size() -  registered3dVector_.size())){
+       std::cerr<<"map size: "<<registered3dMap_.size()<<
+                  "vector size: "<<registeredVector_.size()<<
+                  "remaning for map: "<<
+                  " - "<<introspectionMessage_.vectors3d.size() -  registered3dVector_.size()<<
+                  "introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
+
+     }
+
+    assert(registered3dMap_.size() == introspectionMessage_.vectors3d.size() -  registered3dVector_.size());
     dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i + registered3dVector_.size()];
     vp.name = registered3dMap_[i].first;
     assert(registered3dMap_[i].second->rows() == 3);
