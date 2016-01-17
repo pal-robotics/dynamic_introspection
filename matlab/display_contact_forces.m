@@ -15,46 +15,52 @@ ComputedRightTorque = read_introspection_variable(msgs, 'right_computed_torque',
 figure
 subplot(4,3,1);
 hold on;
-plot(RawLeftRawForce(:,1), 'r');
 plot(ComputedLeftForce(:,1), 'b');
+plot(RawLeftRawForce(:,1), 'r');
 legend('computed left Force X','raw Force X');
+grid on;
 hold off;
 
 subplot(4,3,2);
 hold on;
-plot(RawLeftRawForce(:,2), 'r');
 plot(ComputedLeftForce(:,2), 'b');
+plot(RawLeftRawForce(:,2), 'r');
 legend('computed left Force Y','raw Force Y');
+grid on;
 hold off;
 
 subplot(4,3,3);
 hold on;
-plot(RawLeftRawForce(:,3), 'r');
 plot(ComputedLeftForce(:,3), 'b');
+plot(RawLeftRawForce(:,3), 'r');
 legend('computed left Force Z','raw Force Z');
+grid on;
 hold off;
 
 %%%%%%%%%%%%%%%%
 
 subplot(4,3,4);
 hold on;
-plot(RawLeftRawTorque(:,1), 'r');
 plot(ComputedLeftTorque(:,1), 'b');
+plot(RawLeftRawTorque(:,1), 'r');
 legend('computed left Torque X','raw Torque X');
+grid on;
 hold off;
 
 subplot(4,3,5);
 hold on;
-plot(RawLeftRawTorque(:,2), 'r');
 plot(ComputedLeftTorque(:,2), 'b');
+plot(RawLeftRawTorque(:,2), 'r');
 legend('computed left Torque Y','raw Torque Y');
+grid on;
 hold off;
 
 subplot(4,3,6);
 hold on;
-plot(RawLeftRawTorque(:,3), 'r');
 plot(ComputedLeftTorque(:,3), 'b');
+plot(RawLeftRawTorque(:,3), 'r');
 legend('computed left Torque Z','raw Torque Z');
+grid on;
 hold off;
 
 %%%%%%%%%%%%%%%
@@ -62,45 +68,51 @@ hold off;
 
 subplot(4,3,7);
 hold on;
-plot(RawRightRawForce(:,1), 'r');
 plot(ComputedRightForce(:,1), 'b');
+plot(RawRightRawForce(:,1), 'r');
 legend('computed right Force X','raw Force X');
+grid on;
 hold off;
 
 subplot(4,3,8);
 hold on;
-plot(RawRightRawForce(:,2), 'r');
 plot(ComputedRightForce(:,2), 'b');
+plot(RawRightRawForce(:,2), 'r');
 legend('computed right Force Y','raw Force Y');
+grid on;
 hold off;
 
 subplot(4,3,9);
 hold on;
-plot(RawRightRawForce(:,3), 'r');
 plot(ComputedRightForce(:,3), 'b');
+plot(RawRightRawForce(:,3), 'r');
 legend('computed right Force Z','raw Force Z');
+grid on;
 hold off;
 
 %%%%%%%%%%%%%%%%
 
 subplot(4,3,10);
 hold on;
-plot(RawLeftRawTorque(:,1), 'r');
 plot(ComputedRightTorque(:,1), 'b');
+plot(RawRightRawTorqe(:,1), 'r');
 legend('computed right Torque X','raw Torque X');
+grid on;
 hold off;
 
 subplot(4,3,11);
 hold on;
-plot(RawLeftRawTorque(:,2), 'r');
 plot(ComputedRightTorque(:,2), 'b');
+plot(RawRightRawTorqe(:,2), 'r');
 legend('computed right Torque Y','raw Torque Y');
+grid on;
 hold off;
 
 subplot(4,3,12);
 hold on;
-plot(RawLeftRawTorque(:,3), 'r');
 plot(ComputedRightTorque(:,3), 'b');
+plot(RawRightRawTorqe(:,3), 'r');
 legend('computed right Torque Z','raw Torque Z');
+grid on;
 hold off;
 end

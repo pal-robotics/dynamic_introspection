@@ -25,6 +25,8 @@ plot(localCOPleftY, 'g');
 plot(rawLocalCOPleftX, 'm');
 plot(rawLocalCOPleftY);
 legend('local COP left X','local COP left Y', 'RAW local COP left X','RAW local COP left Y');
+ylim([-1, 1]);
+grid on;
 hold off;
 
 subplot(2,2,2);
@@ -33,7 +35,9 @@ plot(localCOPrightX, 'r' );
 plot(localCOPrightY, 'g');
 plot(rawLocalCOPrightX, 'm' );
 plot(rawLocalCOPrightY);
-legend('local COP right X','local COP right Y', 'RAW local COP right X','RAW local COP right Y')
+legend('local COP right X','local COP right Y', 'RAW local COP right X','RAW local COP right Y');
+ylim([-1, 1]);
+grid on;
 hold off;
 
 subplot(2,2,3);
@@ -43,6 +47,7 @@ plot(globalCOPY, 'g');
 plot(rawGlobalCOPX, 'm' );
 plot(rawGlobalCOPY);
 legend('global COP X','global COP Y', 'RAW global COP X', 'RAW global COP Y');
+grid on;
 hold off;
 
 end
