@@ -39,8 +39,8 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 add_executable(DynamicIntrospectionExample test/DynamicIntrospectionExample.cpp)
 target_link_libraries(DynamicIntrospectionExample ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(mapIntrospectionTest test/mapIntrospectionTest.cpp)
-target_link_libraries(mapIntrospectionTest ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_executable(mapIntrospectionTest test/mapIntrospectionTest.cpp)
+#target_link_libraries(mapIntrospectionTest ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_executable(DynamicIntrospectionBagExample test/DynamicIntrospectionBagExample.cpp)
 target_link_libraries(DynamicIntrospectionBagExample ${PROJECT_NAME} ${catkin_LIBRARIES})

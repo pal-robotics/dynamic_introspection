@@ -26,12 +26,12 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   static DynamicIntrospection* Instance();
 
-  ~DynamicIntrospection();
+  virtual ~DynamicIntrospection();
 
   void registerVariable(int *variable, std::string id);
   void registerVariable(double *variable, std::string id);
   void registerVariable(bool *variable, std::string id);
-  void registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
+  //void registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
   void registerVariable(Eigen::Vector3d *variable, std::string id);
   void registerVariable(Eigen::VectorXd *variable, std::string id);
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
@@ -39,7 +39,7 @@ public:
   void unRegisterVariable(int *variable, std::string id);
   void unRegisterVariable(double *variable, std::string id);
   void unRegisterVariable(bool *variable, std::string id);
-  void unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
+  //void unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id);
   void unRegisterVariable(Eigen::Vector3d *variable, std::string id);
   void unRegisterVariable(Eigen::VectorXd *variable, std::string id);
   void unRegisterVariable(Eigen::MatrixXd *variable, std::string id);
@@ -76,7 +76,7 @@ private:
   std::vector<std::pair<std::string, bool*> > registeredBool_;
   std::vector<std::pair<std::string, Eigen::VectorXd*> > registeredVector_;
   std::vector<std::pair<std::string, Eigen::Vector3d*> > registered3dVector_;
-  std::vector<std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> > registered3dMap_;
+  //std::vector<std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> > registered3dMap_;
   std::vector<std::pair<std::string, Eigen::MatrixXd*> > registeredMatrix_;
 
   dynamic_introspection::IntrospectionMsg introspectionMessage_;

@@ -95,9 +95,12 @@ void DynamicIntrospection::setOutputTopic(const std::string &outputTopic){
   introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
 }
 
+/// @todo how to propperly destroy singleton patterm?
 DynamicIntrospection::~DynamicIntrospection(){
   introspectionPub_.shutdown();
   closeBag();
+  delete m_pInstance;
+  m_pInstance = 0;
 }
 
 void DynamicIntrospection::openBag(std::string fileName){
@@ -129,7 +132,7 @@ void DynamicIntrospection::generateMessage(){
   introspectionMessage_.doubles.resize(registeredDouble_.size());
   introspectionMessage_.bools.resize(registeredBool_.size());
   introspectionMessage_.vectors.resize(registeredVector_.size());
-  introspectionMessage_.vectors3d.resize(registered3dVector_.size() + registered3dMap_.size());
+  introspectionMessage_.vectors3d.resize(registered3dVector_.size());
   introspectionMessage_.matrixs.resize(registeredMatrix_.size());
  //std::cerr<<"Registered map size:"<<registered3dMap_.size()<<std::endl;
  // std::cerr<<"introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
@@ -172,23 +175,23 @@ void DynamicIntrospection::generateMessage(){
     copyEigenVector2Message(*registered3dVector_[i].second, vp);
   }
 
-  for(size_t i=0; i<registered3dMap_.size(); ++i){
-    if(registered3dMap_.size() != (introspectionMessage_.vectors3d.size() -  registered3dVector_.size())){
-       std::cerr<<"map size: "<<registered3dMap_.size()<<
-                  "vector size: "<<registeredVector_.size()<<
-                  "remaning for map: "<<
-                  " - "<<introspectionMessage_.vectors3d.size() -  registered3dVector_.size()<<
-                  "introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
+//  for(size_t i=0; i<registered3dMap_.size(); ++i){
+//    if(registered3dMap_.size() != (introspectionMessage_.vectors3d.size() -  registered3dVector_.size())){
+//       std::cerr<<"map size: "<<registered3dMap_.size()<<
+//                  "vector size: "<<registeredVector_.size()<<
+//                  "remaning for map: "<<
+//                  " - "<<introspectionMessage_.vectors3d.size() -  registered3dVector_.size()<<
+//                  "introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
 
-     }
+//     }
 
-    assert(registered3dMap_.size() == introspectionMessage_.vectors3d.size() -  registered3dVector_.size());
-    dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i + registered3dVector_.size()];
-    vp.name = registered3dMap_[i].first;
-    assert(registered3dMap_[i].second->rows() == 3);
-    vp.value.resize(registered3dMap_[i].second->rows());
-    copyEigenVector2Message(*registered3dMap_[i].second, vp);
-  }
+//    assert(registered3dMap_.size() == introspectionMessage_.vectors3d.size() -  registered3dVector_.size());
+//    dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors3d[i + registered3dVector_.size()];
+//    vp.name = registered3dMap_[i].first;
+//    assert(registered3dMap_[i].second->rows() == 3);
+//    vp.value.resize(registered3dMap_[i].second->rows());
+//    copyEigenVector2Message(*registered3dMap_[i].second, vp);
+//  }
 
   for(size_t i=0; i<registeredVector_.size(); ++i){
     dynamic_introspection::VectorParameter &vp = introspectionMessage_.vectors[i];
@@ -279,17 +282,17 @@ void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::stri
   }
 }
 
-void DynamicIntrospection::registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
-  if(contains(registered3dMap_, id)){
-    ROS_ERROR_STREAM("Matrix: "<<id<<" has allreday been registered");
-    throw ExistingVariableException();
-  }
-  else{
-    ROS_DEBUG_STREAM("Registered Matrix: "<<id);
-    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
-    registered3dMap_.push_back(p);
-  }
-}
+//void DynamicIntrospection::registerVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
+//  if(contains(registered3dMap_, id)){
+//    ROS_ERROR_STREAM("Matrix: "<<id<<" has allreday been registered");
+//    throw ExistingVariableException();
+//  }
+//  else{
+//    ROS_DEBUG_STREAM("Registered Matrix: "<<id);
+//    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
+//    registered3dMap_.push_back(p);
+//  }
+//}
 
 
 /////////
@@ -366,23 +369,23 @@ void DynamicIntrospection::unRegisterVariable(Eigen::Vector3d *variable, std::st
   }
 }
 
-void DynamicIntrospection::unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
-  if(!contains(registered3dMap_, id)){
-    ROS_ERROR_STREAM("Vector3Map: "<<id<<" has NOT been registered");
-    throw DoesNotExistingVariableException();
-  }
-  else{
-    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
-    int index = indexVector(registered3dMap_, p);
-    if(index < 0){
-      ROS_ERROR_STREAM("Vector3Map : "<<id<<" has has been registered but the pointer to its data does not match!");
-    }
-    else{
-      ROS_DEBUG_STREAM("Deleting int: "<<id);
-      registered3dMap_.erase(registered3dMap_.begin() + index);
-    }
-  }
-}
+//void DynamicIntrospection::unRegisterVariable(Eigen::Map<const Eigen::Vector3d> *variable, std::string id){
+//  if(!contains(registered3dMap_, id)){
+//    ROS_ERROR_STREAM("Vector3Map: "<<id<<" has NOT been registered");
+//    throw DoesNotExistingVariableException();
+//  }
+//  else{
+//    std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> p(id, variable);
+//    int index = indexVector(registered3dMap_, p);
+//    if(index < 0){
+//      ROS_ERROR_STREAM("Vector3Map : "<<id<<" has has been registered but the pointer to its data does not match!");
+//    }
+//    else{
+//      ROS_DEBUG_STREAM("Deleting int: "<<id);
+//      registered3dMap_.erase(registered3dMap_.begin() + index);
+//    }
+//  }
+//}
 
 void DynamicIntrospection::unRegisterVariable(Eigen::VectorXd *variable, std::string id){
   if(!contains(registeredVector_, id)){
