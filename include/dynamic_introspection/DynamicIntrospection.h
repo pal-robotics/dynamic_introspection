@@ -15,6 +15,7 @@
 #include <ros/ros.h>
 #include <rosbag/bag.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
+#include <realtime_tools/realtime_publisher.h>
 
 /**
  * @brief The DynamicIntrospection class allows to do dynamic instrospection of different
@@ -66,7 +67,8 @@ private:
   bool configured_;
 
   ros::NodeHandle node_handle_;
-  ros::Publisher introspectionPub_;
+  //ros::Publisher introspectionPub_;
+  boost::shared_ptr<realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg> > introspectionPub_;
 
   rosbag::Bag bag_;
 

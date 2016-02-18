@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dynamic_introspection)
 
-find_package(catkin REQUIRED COMPONENTS roscpp message_generation rosbag pluginlib)
+find_package(catkin REQUIRED COMPONENTS roscpp
+                                        message_generation
+                                        rosbag
+                                        pluginlib
+                                        control_toolbox)
 
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
