@@ -134,6 +134,7 @@ void DynamicIntrospection::generateMessage(){
   introspectionMessage_.vectors.resize(registeredVector_.size());
   introspectionMessage_.vectors3d.resize(registered3dVector_.size());
   introspectionMessage_.matrixs.resize(registeredMatrix_.size());
+  introspectionMessage_.matrixs3d.resize(registeredMatrix3d_.size());
  //std::cerr<<"Registered map size:"<<registered3dMap_.size()<<std::endl;
  // std::cerr<<"introspection message size: "<<introspectionMessage_.vectors3d.size()<<std::endl;
 
@@ -208,6 +209,15 @@ void DynamicIntrospection::generateMessage(){
     mp.value.resize(mp.rows*mp.cols);
     copyEigenMatrix2Message(*registeredMatrix_[i].second, mp);
   }
+
+  for(size_t i=0; i<registeredMatrix3d_.size(); ++i){
+    dynamic_introspection::MatrixParameter &mp = introspectionMessage_.matrixs3d[i];
+    mp.name = registeredMatrix3d_[i].first;
+    mp.rows = registeredMatrix3d_[i].second->rows();
+    mp.cols =  registeredMatrix3d_[i].second->cols();
+    mp.value.resize(mp.rows*mp.cols);
+    copyEigenMatrix2Message(*registeredMatrix3d_[i].second, mp);
+  }
 }
 
 void DynamicIntrospection::registerVariable(int *variable, std::string id){
@@ -279,6 +289,18 @@ void DynamicIntrospection::registerVariable(Eigen::MatrixXd *variable, std::stri
     ROS_DEBUG_STREAM("Registered Matrix: "<<id);
     std::pair<std::string, Eigen::MatrixXd*> p(id, variable);
     registeredMatrix_.push_back(p);
+  }
+}
+
+void DynamicIntrospection::registerVariable(Eigen::Matrix3d *variable, std::string id){
+  if(contains(registeredMatrix3d_, id)){
+    ROS_ERROR_STREAM("Matrix3d: "<<id<<" has allreday been registered");
+    throw ExistingVariableException();
+  }
+  else{
+    ROS_DEBUG_STREAM("Registered Matrix3d: "<<id);
+    std::pair<std::string, Eigen::Matrix3d*> p(id, variable);
+    registeredMatrix3d_.push_back(p);
   }
 }
 

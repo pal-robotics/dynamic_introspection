@@ -35,6 +35,7 @@ public:
   void registerVariable(Eigen::Vector3d *variable, std::string id);
   void registerVariable(Eigen::VectorXd *variable, std::string id);
   void registerVariable(Eigen::MatrixXd *variable, std::string id);
+  void registerVariable(Eigen::Matrix3d *variable, std::string id);
 
   void unRegisterVariable(int *variable, std::string id);
   void unRegisterVariable(double *variable, std::string id);
@@ -43,6 +44,7 @@ public:
   void unRegisterVariable(Eigen::Vector3d *variable, std::string id);
   void unRegisterVariable(Eigen::VectorXd *variable, std::string id);
   void unRegisterVariable(Eigen::MatrixXd *variable, std::string id);
+  void unRegisterVariable(Eigen::Matrix3d *variable, std::string id);
 
   void setOutputTopic(const std::string &outputTopic);
 
@@ -78,6 +80,7 @@ private:
   std::vector<std::pair<std::string, Eigen::Vector3d*> > registered3dVector_;
   //std::vector<std::pair<std::string, Eigen::Map<const Eigen::Vector3d>*> > registered3dMap_;
   std::vector<std::pair<std::string, Eigen::MatrixXd*> > registeredMatrix_;
+  std::vector<std::pair<std::string, Eigen::Matrix3d*> > registeredMatrix3d_;
 
   dynamic_introspection::IntrospectionMsg introspectionMessage_;
 
