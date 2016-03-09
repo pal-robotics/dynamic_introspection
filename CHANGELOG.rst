@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2016-03-09)
+------------------
 * Changed ros publisher to real time publisher
 * removed eigen map registering
 * Continue matlab developing
