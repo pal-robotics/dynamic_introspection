@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamic_introspection</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <description>The dynamic_introspection package</description>
 
   <maintainer email="hilario.tome@pal-robotics.com">Hilario Tomé</maintainer>
@@ -15,10 +15,12 @@
   <build_depend>eigen</build_depend>
   <build_depend>cmake_modules</build_depend>
   <build_depend>pluginlib</build_depend>
+  <build_depend>control_toolbox</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>rosbag</run_depend>
   <run_depend>pluginlib</run_depend>
+  <run_depend>control_toolbox</run_depend>
 
   <export>
      <dynamic_introspection plugin="${prefix}/test/testPlugins.xml" />

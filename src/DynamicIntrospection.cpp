@@ -87,17 +87,21 @@ DynamicIntrospection::DynamicIntrospection(){
 //    ros::console::notifyLoggerLevelsChanged();
 //  }
   node_handle_ = ros::NodeHandle();
-  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
+  //introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
+  introspectionPub_.reset(new realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg>(node_handle_, "data", 10));
+
 }
 
 void DynamicIntrospection::setOutputTopic(const std::string &outputTopic){
-  introspectionPub_.shutdown();
-  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
+  //introspectionPub_.shutdown();
+  //introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
+  introspectionPub_.reset(new realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg>(node_handle_, outputTopic, 10));
 }
 
 /// @todo how to propperly destroy singleton patterm?
 DynamicIntrospection::~DynamicIntrospection(){
-  introspectionPub_.shutdown();
+  //introspectionPub_.shutdown();
+  introspectionPub_->stop();
   closeBag();
   delete m_pInstance;
   m_pInstance = 0;
@@ -123,7 +127,13 @@ void DynamicIntrospection::publishDataBag(){
 
 void DynamicIntrospection::publishDataTopic(){
   generateMessage();
-  introspectionPub_.publish(introspectionMessage_);
+
+  //.publish(introspectionMessage_);
+  if(introspectionPub_->trylock()){
+
+    introspectionPub_->msg_ = introspectionMessage_;
+    introspectionPub_->unlockAndPublish();
+  }
 }
 
 void DynamicIntrospection::generateMessage(){
