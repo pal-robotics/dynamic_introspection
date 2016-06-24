@@ -18,14 +18,6 @@ int main(int argc, char **argv) {
 
   REGISTER_VARIABLE(&bool_test, "bool_test");
 
-  Eigen::MatrixXd matrix_test(5,5);
-  matrix_test.setIdentity();
-  REGISTER_VARIABLE(&matrix_test, "matrix_test");
-
-  Eigen::VectorXd vector_test(5);
-  vector_test.setRandom();
-  REGISTER_VARIABLE(&vector_test, "vector_test");
-
   ROS_INFO("Spinning node");
 
   while(nh.ok()){

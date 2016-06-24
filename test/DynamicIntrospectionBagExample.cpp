@@ -19,22 +19,6 @@ int main(int argc, char **argv) {
 
   REGISTER_VARIABLE(&bool_test, "bool_test")
 
-  Eigen::MatrixXd matrix_test(5,5);
-  matrix_test.setIdentity();
-  REGISTER_VARIABLE(&matrix_test, "matrix_test")
-
-  Eigen::VectorXd vector_test(5);
-  vector_test.setRandom();
-  REGISTER_VARIABLE(&vector_test, "vector_test")
-
-  Eigen::VectorXd vector_test2(5);
-  vector_test2.setRandom();
-  REGISTER_VARIABLE(&vector_test2, "vector_test2")
-
-  Eigen::VectorXd vector_test3(5);
-  vector_test3.setRandom();
-  REGISTER_VARIABLE(&vector_test3, "vector_test3")
-
   ROS_INFO("Spinning node");
 
   OPEN_BAG("test.bag")

@@ -5,43 +5,42 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         message_generation
                                         rosbag
                                         pluginlib
-                                        control_toolbox)
+                                        control_toolbox
+                                        visualization_msgs)
 
 find_package(cmake_modules REQUIRED)
-find_package(Eigen REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 add_message_files(DIRECTORY msg FILES BoolParameter.msg
                                       IntrospectionMsg.msg
-                                      VectorParameter.msg
                                       DoubleParameter.msg
-                                      MatrixParameter.msg
                                       IntParameter.msg
-                                      StringParameter.msg)
+                                      MarkerParameter.msg)
 
 
-generate_messages()
+generate_messages(DEPENDENCIES visualization_msgs)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp rosbag
-  DEPENDS Eigen
 )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} src/DynamicIntrospection.cpp)
+add_library(${PROJECT_NAME} src/DynamicIntrospection.cpp src/DynamicIntrospectionUtils.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(DynamicIntrospectionExample test/DynamicIntrospectionExample.cpp)
 target_link_libraries(DynamicIntrospectionExample ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+add_executable(IntrospectionBagAnalyzer src/IntrospectionBagAnalyzer.cpp)
+target_link_libraries(IntrospectionBagAnalyzer ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 #add_executable(mapIntrospectionTest test/mapIntrospectionTest.cpp)
 #target_link_libraries(mapIntrospectionTest ${PROJECT_NAME} ${catkin_LIBRARIES})
