@@ -28,15 +28,15 @@ public:
 
   virtual ~DynamicIntrospection();
 
-  void registerVariable(int *variable, std::string id);
-  void registerVariable(double *variable, std::string id);
-  void registerVariable(bool *variable, std::string id);
-  void registerVariable(visualization_msgs::MarkerArray *variable, std::string id);
+  void registerVariable(int *variable, const std::string &id);
+  void registerVariable(double *variable, const std::string &id);
+  void registerVariable(bool *variable, const std::string &id);
+  void registerVariable(visualization_msgs::MarkerArray *variable, const std::string &id);
 
-  void unRegisterVariable(int *variable, std::string id);
-  void unRegisterVariable(double *variable, std::string id);
-  void unRegisterVariable(bool *variable, std::string id);
-  void unRegisterVariable(visualization_msgs::MarkerArray *variable, std::string id);
+  void unRegisterVariable(int *variable, const std::string &id);
+  void unRegisterVariable(double *variable, const std::string &id);
+  void unRegisterVariable(bool *variable, const std::string &id);
+  void unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id);
 
   void setOutputTopic(const std::string &outputTopic);
 

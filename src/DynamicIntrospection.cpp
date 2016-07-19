@@ -2,8 +2,7 @@
 #include <dynamic_introspection/BoolParameter.h>
 #include <dynamic_introspection/DoubleParameter.h>
 #include <dynamic_introspection/IntParameter.h>
-#include <dynamic_introspection/VectorParameter.h>
-#include <dynamic_introspection/MatrixParameter.h>
+#include <dynamic_introspection/MarkerParameter.h>
 #include <exception>
 
 struct ExistingVariableException : public std::exception
@@ -121,7 +120,7 @@ void DynamicIntrospection::publishDataBag(){
     ROS_ERROR_STREAM("Bag is not open");
   }
   generateMessage();
-  bag_.write("dynamic_introspection", ros::Time::now(), introspectionMessage_);
+  bag_.write("data", ros::Time::now(), introspectionMessage_);
 }
 
 void DynamicIntrospection::publishDataTopic(){
@@ -171,7 +170,7 @@ void DynamicIntrospection::generateMessage(){
 
 }
 
-void DynamicIntrospection::registerVariable(int *variable, std::string id){
+void DynamicIntrospection::registerVariable(int *variable, const std::string &id){
   if(contains(registeredInt_, id)){
     ROS_ERROR_STREAM("Int : "<<id<<" has allreday been registered");
     throw ExistingVariableException();
@@ -183,7 +182,7 @@ void DynamicIntrospection::registerVariable(int *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::registerVariable(double *variable, std::string id){
+void DynamicIntrospection::registerVariable(double *variable, const std::string &id){
   if(contains(registeredDouble_, id)){
     ROS_ERROR_STREAM("Double : "<<id<<" has allreday been registered");
     throw ExistingVariableException();
@@ -195,7 +194,7 @@ void DynamicIntrospection::registerVariable(double *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::registerVariable(bool *variable, std::string id){
+void DynamicIntrospection::registerVariable(bool *variable, const std::string &id){
   if(contains(registeredBool_, id)){
     ROS_ERROR_STREAM("Bool: "<<id<<" has allreday been registered");
     throw ExistingVariableException();
@@ -207,7 +206,7 @@ void DynamicIntrospection::registerVariable(bool *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::registerVariable(visualization_msgs::MarkerArray *variable, std::string id){
+void DynamicIntrospection::registerVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
   if(contains(registeredMarkers_, id)){
     ROS_ERROR_STREAM("Marker: "<<id<<" has allreday been registered");
     throw ExistingVariableException();
@@ -221,7 +220,7 @@ void DynamicIntrospection::registerVariable(visualization_msgs::MarkerArray *var
 
 /////////
 
-void DynamicIntrospection::unRegisterVariable(int *variable, std::string id){
+void DynamicIntrospection::unRegisterVariable(int *variable, const std::string &id){
   if(!contains(registeredInt_, id)){
     ROS_ERROR_STREAM("Int : "<<id<<" has NOT been registered");
     throw DoesNotExistingVariableException();
@@ -239,7 +238,7 @@ void DynamicIntrospection::unRegisterVariable(int *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::unRegisterVariable(double *variable, std::string id){
+void DynamicIntrospection::unRegisterVariable(double *variable, const std::string &id){
   if(!contains(registeredDouble_, id)){
     ROS_ERROR_STREAM("Double : "<<id<<" has NOT been registered");
     throw DoesNotExistingVariableException();
@@ -257,7 +256,7 @@ void DynamicIntrospection::unRegisterVariable(double *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::unRegisterVariable(bool *variable, std::string id){
+void DynamicIntrospection::unRegisterVariable(bool *variable, const std::string &id){
   if(!contains(registeredBool_, id)){
     ROS_ERROR_STREAM("Bool: "<<id<<" has NOT been registered");
     throw DoesNotExistingVariableException();
@@ -275,7 +274,7 @@ void DynamicIntrospection::unRegisterVariable(bool *variable, std::string id){
   }
 }
 
-void DynamicIntrospection::unRegisterVariable(visualization_msgs::MarkerArray *variable, std::string id){
+void DynamicIntrospection::unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
   if(!contains(registeredMarkers_, id)){
     ROS_ERROR_STREAM("Marker: "<<id<<" has NOT been registered");
     throw DoesNotExistingVariableException();

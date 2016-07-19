@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   bag.open(bagName, rosbag::bagmode::Read);
 
   std::vector<std::string> topics;
-  topics.push_back(std::string("dynamic_introspection"));
+  topics.push_back(std::string("data"));
 
   rosbag::View view(bag, rosbag::TopicQuery(topics));
 
