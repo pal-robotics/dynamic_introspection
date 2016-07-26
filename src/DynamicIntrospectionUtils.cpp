@@ -207,3 +207,20 @@ void IntrospectionBagReader::getVariable(const std::string &variableId1, const s
   }
 
 }
+
+void IntrospectionBagReader::getVariable(const std::vector<std::string> &names,
+                                         std::vector<Eigen::VectorXd> &value){
+
+  for(size_t i=0; i<names.size(); ++i){
+    assert(nMessages_ == value[i].size());
+
+    int index;
+    if(!getMapValue(doubleNameMap_, names[i], index)){
+      throw DoesNotExistingVariableException(names[i]);
+    }
+
+    for(size_t j=0; j<nMessages_; ++j){
+      value[i](j) = doubleValues_[i][j];
+    }
+  }
+}

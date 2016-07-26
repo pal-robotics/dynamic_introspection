@@ -29,6 +29,8 @@ public:
                    const std::string &variable3, const std::string &variableId4,
                    std::vector<Eigen::Quaterniond> &value);
 
+  void getVariable(const std::vector<std::string> &names, std::vector<Eigen::VectorXd> &value);
+
 private:
 
   int nMessages_;
