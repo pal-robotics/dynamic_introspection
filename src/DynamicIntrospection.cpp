@@ -120,7 +120,7 @@ void DynamicIntrospection::publishDataBag(){
     ROS_ERROR_STREAM("Bag is not open");
   }
   generateMessage();
-  bag_.write("data", ros::Time::now(), introspectionMessage_);
+  bag_.write("/data", ros::Time::now(), introspectionMessage_);
 }
 
 void DynamicIntrospection::publishDataTopic(){
