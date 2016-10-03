@@ -52,6 +52,9 @@ target_link_libraries(IntrospectionBagAnalyzer ${PROJECT_NAME} ${catkin_LIBRARIE
 add_executable(DynamicIntrospectionBagExample test/DynamicIntrospectionBagExample.cpp)
 target_link_libraries(DynamicIntrospectionBagExample ${PROJECT_NAME} ${catkin_LIBRARIES})
 
+add_executable(DynamicIntrospectionRosbagRecordingServer src/DynamicIntrospectionRosbagRecordingServer.cpp)
+target_link_libraries(DynamicIntrospectionRosbagRecordingServer ${PROJECT_NAME} ${catkin_LIBRARIES})
+
 add_subdirectory(test)
 
 install(TARGETS ${PROJECT_NAME}
