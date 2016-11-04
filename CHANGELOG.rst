@@ -2,6 +2,18 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.4 (2016-10-12)
+------------------
+* Added missing depend
+* Added only basic type registering
+* IntrospectionBagReader
+* Added introspection bag reader
+* Removed registering of vector and matrix, added markers registration
+* Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
+* Added zmp debuggin matlab
+* Added matrix3d registering and estimation matlab
+* Contributors: Hilario Tome
+
 0.0.3 (2016-03-09)
 ------------------
 * Changed ros publisher to real time publisher
