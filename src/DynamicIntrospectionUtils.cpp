@@ -58,13 +58,15 @@ IntrospectionBagReader::IntrospectionBagReader(const std::string &bagFileName){
 void IntrospectionBagReader::readBag(rosbag::Bag &bag){
 
   std::vector<std::string> topics;
-  topics.push_back(std::string("data"));
+  topics.push_back(std::string("/data"));
 
   rosbag::View view(bag, rosbag::TopicQuery(topics));
 
   bool firstMessage = true;
 
   nMessages_ = view.size();
+
+  ROS_INFO_STREAM("Number of messages: "<<nMessages_);
 
   int counter = 0;
 
