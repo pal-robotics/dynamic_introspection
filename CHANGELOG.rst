@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2016-11-09)
+------------------
 * Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
 * Changed introspection bag tools defaut topic
 * Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
