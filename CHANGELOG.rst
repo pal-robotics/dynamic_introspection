@@ -2,6 +2,14 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
+* Changed introspection bag tools defaut topic
+* Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
+* Started to implement dynamic introspection server
+* Contributors: Hilario Tome
+
 0.0.4 (2016-10-12)
 ------------------
 * Added missing depend
