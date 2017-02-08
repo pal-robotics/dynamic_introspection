@@ -5,6 +5,13 @@
 #include <dynamic_introspection/MarkerParameter.h>
 #include <exception>
 
+template<typename T>
+  typename std::vector<T>::iterator
+  const_iterator_cast(std::vector<T>& v, typename std::vector<T>::const_iterator iter)
+  {
+    return v.begin() + (iter - v.cbegin());
+  }
+
 struct ExistingVariableException : public std::exception
 {
   const char * what () const throw ()
@@ -22,10 +29,10 @@ struct DoesNotExistingVariableException : public std::exception
 };
 
 template<typename C>
-bool contains(const std::vector<std::pair<std::string, C*> > & c, const std::string& e)
+bool contains(const std::vector<std::tuple<std::string, const C*, C> >& c, const std::string& e)
 {
   for(size_t i=0; i<c.size(); ++i){
-    if(c[i].first == e){
+    if(std::get<0>(c[i]) == e){
       return true;
     }
   }
@@ -33,39 +40,18 @@ bool contains(const std::vector<std::pair<std::string, C*> > & c, const std::str
 }
 
 template <class T>
-int indexVector(std::vector<T> v, T e){
-  auto it = std::find(v.begin(), v.end(), e);
-  if (it == v.end())
-  {
-    // name not in vector
-    return -1;
-  } else
-  {
-    return std::distance(v.begin(), it);
+int indexVector(std::vector<T> v, const std::string &id){
+
+  for(auto it = v.begin(); it != v.end(); ++it){
+    if(std::get<0>(*it) == id){
+      return std::distance(v.begin(), it);
+    }
   }
+
+  return -1;
 }
 
 DynamicIntrospection* DynamicIntrospection::m_pInstance = NULL;
-
-//void copyEigenVector2Message(const Eigen::VectorXd &in, dynamic_introspection::VectorParameter &out){
-//  assert(in.rows() == out.value.size());
-//  for(size_t i=0; i<in.rows(); ++i){
-//    out.value[i] = in(i);
-//  }
-//}
-
-//void copyEigenMatrix2Message(const Eigen::MatrixXd &in, dynamic_introspection::MatrixParameter &out){
-//  assert(in.rows() == out.rows);
-//  assert(in.cols() == out.cols);
-//  assert(in.rows()*in.cols() == out.value.size());
-
-//  for(size_t i=0; i<in.rows(); ++i){
-//    for(size_t j=0; j<in.cols(); ++j){
-//      out.value[j + in.rows()*i] = in(i,j);
-//    }
-//  }
-//}
-
 
 DynamicIntrospection* DynamicIntrospection::Instance(){
   if (!m_pInstance){   // Only allow one instance of class to be generated.
@@ -74,32 +60,22 @@ DynamicIntrospection* DynamicIntrospection::Instance(){
   return m_pInstance;
 }
 
-/*
-DynamicIntrospection::DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic):
-  node_handle_(nh), configured_(false), openedBag_(false){
-  introspectionPub_ =  nh.advertise<dynamic_introspection::IntrospectionMsg>(topic, 10);
-}
-*/
 DynamicIntrospection::DynamicIntrospection(){
-  //  if(ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug)){
-  //    ros::console::notifyLoggerLevelsChanged();
-  //  }
+
   node_handle_ = ros::NodeHandle();
-  //introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
-  introspectionPub_.reset(new realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg>(node_handle_, "data", 10));
+  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
+  thread_ = boost::thread(&DynamicIntrospection::publishDataTopic, this);
 
 }
 
 void DynamicIntrospection::setOutputTopic(const std::string &outputTopic){
-  //introspectionPub_.shutdown();
-  //introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
-  introspectionPub_.reset(new realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg>(node_handle_, outputTopic, 10));
+  introspectionPub_.shutdown();
+  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>(outputTopic, 10);
 }
 
 /// @todo how to propperly destroy singleton patterm?
 DynamicIntrospection::~DynamicIntrospection(){
-  //introspectionPub_.shutdown();
-  introspectionPub_->stop();
+  introspectionPub_.shutdown();
   closeBag();
   delete m_pInstance;
   m_pInstance = 0;
@@ -124,170 +100,291 @@ void DynamicIntrospection::publishDataBag(){
 }
 
 void DynamicIntrospection::publishDataTopic(){
-  generateMessage();
 
-  //.publish(introspectionMessage_);
-  if(introspectionPub_->trylock()){
+  boost::unique_lock<boost::mutex> lck(updated_cond__mutex_);
+  while(true){
 
-    introspectionPub_->msg_ = introspectionMessage_;
-    introspectionPub_->unlockAndPublish();
+    updated_cond_.wait(lck);
+
+    lock();
+    generateMessage();
+    introspectionPub_.publish(introspectionMessage_);
+    unlock();
+  }
+
+}
+
+void DynamicIntrospection::publishDataTopicRT(){
+
+  if(trylock()){
+    registered_data_.copy();
+    unlock();
+    updated_cond_.notify_one();
+  }
+  else{
+    ROS_WARN_STREAM("Missed introspection update cycle");
   }
 }
 
 void DynamicIntrospection::generateMessage(){
 
-  introspectionMessage_.ints.resize(registeredInt_.size());
-  introspectionMessage_.doubles.resize(registeredDouble_.size());
-  introspectionMessage_.bools.resize(registeredBool_.size());
-  introspectionMessage_.markers.resize(registeredMarkers_.size());
+  introspectionMessage_.ints.resize(registered_data_.registeredInt_.size());
+  introspectionMessage_.doubles.resize(registered_data_.registeredDouble_.size());
+  introspectionMessage_.bools.resize(registered_data_.registeredBool_.size());
+  introspectionMessage_.markers.resize(registered_data_.registeredMarkers_.size());
 
-  for(size_t i=0; i<registeredInt_.size(); ++i){
+  for(size_t i=0; i<registered_data_.registeredInt_.size(); ++i){
     dynamic_introspection::IntParameter &ip = introspectionMessage_.ints[i];
-    ip.name = registeredInt_[i].first;
-    ip.value = *registeredInt_[i].second;
+    ip.name = std::get<0>(registered_data_.registeredInt_[i]);
+    ip.value = std::get<2>(registered_data_.registeredInt_[i]);
   }
 
-  for(size_t i=0; i<registeredDouble_.size(); ++i){
-
-    assert(registeredDouble_.size() == introspectionMessage_.doubles.size());
+  for(size_t i=0; i<registered_data_.registeredDouble_.size(); ++i){
+    assert(registered_data_.registeredDouble_.size() == introspectionMessage_.doubles.size());
     dynamic_introspection::DoubleParameter &dp = introspectionMessage_.doubles[i];
-    /// std::cerr<<"Publishing: "<<registeredDouble_[i].first<<std::endl;
-    dp.name = registeredDouble_[i].first;
-    dp.value = *registeredDouble_[i].second;
+    dp.name = std::get<0>(registered_data_.registeredDouble_[i]);
+    dp.value = std::get<2>(registered_data_.registeredDouble_[i]);
   }
 
-  for(size_t i=0; i<registeredBool_.size(); ++i){
+  for(size_t i=0; i<registered_data_.registeredBool_.size(); ++i){
     dynamic_introspection::BoolParameter &bp = introspectionMessage_.bools[i];
-    bp.name = registeredBool_[i].first;
-    bp.value = *registeredBool_[i].second;
+    bp.name = std::get<0>(registered_data_.registeredBool_[i]);
+    bp.value = std::get<2>(registered_data_.registeredBool_[i]);
   }
 
-  for(size_t i=0; i<registeredMarkers_.size(); ++i){
+  for(size_t i=0; i<registered_data_.registeredMarkers_.size(); ++i){
     dynamic_introspection::MarkerParameter &vp = introspectionMessage_.markers[i];
-    vp.name = registeredMarkers_[i].first;
-    vp.value = *registeredMarkers_[i].second;
+    vp.name = std::get<0>(registered_data_.registeredMarkers_[i]);
+    vp.value = std::get<2>(registered_data_.registeredMarkers_[i]);
   }
 
 }
 
-void DynamicIntrospection::registerVariable(int *variable, const std::string &id){
-  if(contains(registeredInt_, id)){
-    ROS_ERROR_STREAM("Int : "<<id<<" has allreday been registered");
+void DynamicIntrospection::registerVariable(const int *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+  lock();
+  if(contains(registered_data_.registeredInt_, id) ||
+     contains(registered_data_.registeredDouble_, id) ||
+     contains(registered_data_.registeredBool_, id) ||
+     contains(registered_data_.registeredMarkers_, id)){
+    ROS_ERROR_STREAM(id<<" has allreday been registered");
     throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered int: "<<id);
-    std::pair<std::string, int*> p(id, variable);
-    registeredInt_.push_back(p);
+    std::tuple<const std::string, const int*, int> p(id, variable, 0);
+    registered_data_.registeredInt_.push_back(p);
+    registeded_ids.push_back(id);
   }
+  unlock();
 }
 
-void DynamicIntrospection::registerVariable(double *variable, const std::string &id){
-  if(contains(registeredDouble_, id)){
-    ROS_ERROR_STREAM("Double : "<<id<<" has allreday been registered");
+void DynamicIntrospection::registerVariable(const double *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+  lock();
+  if(contains(registered_data_.registeredInt_, id) ||
+     contains(registered_data_.registeredDouble_, id) ||
+     contains(registered_data_.registeredBool_, id) ||
+     contains(registered_data_.registeredMarkers_, id)){
+
+    std::stringstream ss;
+    ss<<id<<" has allreday been registered"<<std::endl;
+
+    ss<<"registered ints:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredInt_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredInt_[i])<<std::endl;
+    }
+    ss<<"registered double:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredDouble_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredDouble_[i])<<std::endl;
+    }
+    ss<<"registered bool:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredBool_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredBool_[i])<<std::endl;
+    }
+    ss<<"registered markers:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredMarkers_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredMarkers_[i])<<std::endl;
+    }
+
+    ROS_ERROR_STREAM(ss.str());
     throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered double: "<<id);
-    std::pair<std::string, double*> p(id, variable);
-    registeredDouble_.push_back(p);
+    std::tuple<const std::string, const double*, double> p(id, variable, 0.);
+    registered_data_.registeredDouble_.push_back(p);
+    registeded_ids.push_back(id);
   }
+  unlock();
 }
 
-void DynamicIntrospection::registerVariable(bool *variable, const std::string &id){
-  if(contains(registeredBool_, id)){
-    ROS_ERROR_STREAM("Bool: "<<id<<" has allreday been registered");
+void DynamicIntrospection::registerVariable(const Eigen::Vector3d *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+  registerVariable(&variable->x(), id + "_X", registeded_ids);
+  registerVariable(&variable->y(), id + "_Y", registeded_ids);
+  registerVariable(&variable->z(), id + "_Z", registeded_ids);
+}
+
+void DynamicIntrospection::registerVariable(const Eigen::Quaterniond *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+//  registerVariable(variable->x(), id + "_QX", registeded_ids);
+//  registerVariable(&variable->y(), id + "_QY", registeded_ids);
+//  registerVariable(&variable->z(), id + "_QZ", registeded_ids);
+//  registerVariable(&variable->w(), id + "_QW", registeded_ids);
+}
+
+void DynamicIntrospection::registerVariable(const bool *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+  lock();
+  if(contains(registered_data_.registeredInt_, id) ||
+     contains(registered_data_.registeredDouble_, id) ||
+     contains(registered_data_.registeredBool_, id) ||
+     contains(registered_data_.registeredMarkers_, id)){
+    ROS_ERROR_STREAM(id<<" has allreday been registered");
     throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered bool: "<<id);
-    std::pair<std::string, bool*> p(id, variable);
-    registeredBool_.push_back(p);
+    std::tuple<const std::string, const bool*, bool> p(id, variable, false);
+    registered_data_.registeredBool_.push_back(p);
+    registeded_ids.push_back(id);
   }
+  unlock();
 }
 
-void DynamicIntrospection::registerVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
-  if(contains(registeredMarkers_, id)){
-    ROS_ERROR_STREAM("Marker: "<<id<<" has allreday been registered");
+void DynamicIntrospection::registerVariable(const visualization_msgs::MarkerArray *variable, const std::string &id, std::vector<std::string> &registeded_ids){
+  lock();
+  if(contains(registered_data_.registeredInt_, id) ||
+     contains(registered_data_.registeredDouble_, id) ||
+     contains(registered_data_.registeredBool_, id) ||
+     contains(registered_data_.registeredMarkers_, id)){
+    ROS_ERROR_STREAM(id<<" has allreday been registered");
     throw ExistingVariableException();
   }
   else{
     ROS_DEBUG_STREAM("Registered Marker: "<<id);
-    std::pair<std::string, visualization_msgs::MarkerArray *> p(id, variable);
-    registeredMarkers_.push_back(p);
+    std::tuple<const std::string, const visualization_msgs::MarkerArray *, visualization_msgs::MarkerArray> p(id, variable, visualization_msgs::MarkerArray());
+    registered_data_.registeredMarkers_.push_back(p);
+    registeded_ids.push_back(id);
   }
+  unlock();
 }
 
 /////////
 
-void DynamicIntrospection::unRegisterVariable(int *variable, const std::string &id){
-  if(!contains(registeredInt_, id)){
-    ROS_ERROR_STREAM("Int : "<<id<<" has NOT been registered");
+void DynamicIntrospection::unRegisterVariable(const std::string &id){
+
+  lock();
+  if(!(contains(registered_data_.registeredInt_, id) ||
+     !contains(registered_data_.registeredDouble_, id) ||
+     !contains(registered_data_.registeredBool_, id) ||
+     !contains(registered_data_.registeredMarkers_, id))){
+
+    std::stringstream ss;
+    ss<<id<<" has NOT been registered"<<std::endl;
+    ss<<"registered ints:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredInt_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredInt_[i])<<std::endl;
+    }
+    ss<<"registered double:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredDouble_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredDouble_[i])<<std::endl;
+    }
+    ss<<"registered bool:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredBool_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredBool_[i])<<std::endl;
+    }
+    ss<<"registered markers:"<<std::endl;
+    for(size_t i=0; i<registered_data_.registeredMarkers_.size(); ++i){
+      ss<<"    "<<std::get<0>(registered_data_.registeredMarkers_[i])<<std::endl;
+    }
+    ROS_ERROR_STREAM(ss.str());
     throw DoesNotExistingVariableException();
   }
   else{
-    std::pair<std::string, int*> p(id, variable);
-    int index = indexVector(registeredInt_, p);
-    if(index < 0){
-      ROS_ERROR_STREAM("Int : "<<id<<" has has been registered but the pointer to its data does not match!");
+    int index_int = indexVector(registered_data_.registeredInt_, id);
+    int index_double = indexVector(registered_data_.registeredDouble_, id);
+    int index_bool = indexVector(registered_data_.registeredBool_, id);
+    int index_markers = indexVector(registered_data_.registeredMarkers_, id);
+
+    if(index_int >= 0){
+      auto it = registered_data_.registeredInt_.begin() + index_int;
+      registered_data_.registeredInt_.erase(it);
+    }
+    else if(index_double >= 0){
+      auto it = registered_data_.registeredDouble_.begin() + index_double;
+      registered_data_.registeredDouble_.erase(it);
+    }
+    else if(index_bool >= 0){
+      auto it = registered_data_.registeredBool_.begin() + index_bool;
+      registered_data_.registeredBool_.erase(it);
+    }
+    else if(index_markers >= 0){
+      auto it = registered_data_.registeredMarkers_.begin() + index_markers;
+      registered_data_.registeredMarkers_.erase(it);
     }
     else{
-      ROS_DEBUG_STREAM("Deleting int: "<<id);
-      registeredInt_.erase(registeredInt_.begin() + index);
+      ROS_ERROR_STREAM(id<<" has NOT been registered");
+      throw DoesNotExistingVariableException();
     }
+    ROS_DEBUG_STREAM("Deleting int: "<<id);
+
   }
+  unlock();
 }
 
-void DynamicIntrospection::unRegisterVariable(double *variable, const std::string &id){
-  if(!contains(registeredDouble_, id)){
-    ROS_ERROR_STREAM("Double : "<<id<<" has NOT been registered");
-    throw DoesNotExistingVariableException();
-  }
-  else{
-    std::pair<std::string, double*> p(id, variable);
-    int index = indexVector(registeredDouble_, p);
-    if(index < 0){
-      ROS_ERROR_STREAM("Double : "<<id<<" has has been registered but the pointer to its data does not match!");
-    }
-    else{
-      ROS_DEBUG_STREAM("Deleting double: "<<id);
-      registeredDouble_.erase(registeredDouble_.begin() + index);
-    }
-  }
-}
+//void DynamicIntrospection::unRegisterVariable(double *variable, const std::string &id){
+//  lock();
+//  if(!contains(registered_data_.registeredDouble_, id)){
+//    ROS_ERROR_STREAM("Double : "<<id<<" has NOT been registered");
+//    throw DoesNotExistingVariableException();
+//  }
+//  else{
+//    std::pair<std::string, double*> p(id, variable);
+//    int index = indexVector(registered_data_.registeredDouble_, p);
+//    if(index < 0){
+//      ROS_ERROR_STREAM("Double : "<<id<<" has has been registered but the pointer to its data does not match!");
+//    }
+//    else{
+//      ROS_DEBUG_STREAM("Deleting double: "<<id);
+//      registered_data_.registeredDouble_.erase(registered_data_.registeredDouble_.begin() + index);
+//    }
+//  }
+//  unlock();
+//}
 
-void DynamicIntrospection::unRegisterVariable(bool *variable, const std::string &id){
-  if(!contains(registeredBool_, id)){
-    ROS_ERROR_STREAM("Bool: "<<id<<" has NOT been registered");
-    throw DoesNotExistingVariableException();
-  }
-  else{
-    std::pair<std::string, bool*> p(id, variable);
-    int index = indexVector(registeredBool_, p);
-    if(index < 0){
-      ROS_ERROR_STREAM("Bool : "<<id<<" has has been registered but the pointer to its data does not match!");
-    }
-    else{
-      ROS_DEBUG_STREAM("Deleting bool: "<<id);
-      registeredBool_.erase(registeredBool_.begin() + index);
-    }
-  }
-}
+//void DynamicIntrospection::unRegisterVariable(bool *variable, const std::string &id){
+//  lock();
+//  if(!contains(registered_data_.registeredBool_, id)){
+//    ROS_ERROR_STREAM("Bool: "<<id<<" has NOT been registered");
+//    throw DoesNotExistingVariableException();
+//  }
+//  else{
+//    std::pair<std::string, bool*> p(id, variable);
+//    int index = indexVector(registered_data_.registeredBool_, p);
+//    if(index < 0){
+//      ROS_ERROR_STREAM("Bool : "<<id<<" has has been registered but the pointer to its data does not match!");
+//    }
+//    else{
+//      ROS_DEBUG_STREAM("Deleting bool: "<<id);
+//      registered_data_.registeredBool_.erase(registered_data_.registeredBool_.begin() + index);
+//    }
+//  }
+//  unlock();
+//}
 
-void DynamicIntrospection::unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
-  if(!contains(registeredMarkers_, id)){
-    ROS_ERROR_STREAM("Marker: "<<id<<" has NOT been registered");
-    throw DoesNotExistingVariableException();
-  }
-  else{
-    std::pair<std::string, visualization_msgs::MarkerArray*> p(id, variable);
-    int index = indexVector(registeredMarkers_, p);
-    if(index < 0){
-      ROS_ERROR_STREAM("Marker : "<<id<<" has has been registered but the pointer to its data does not match!");
-    }
-    else{
-      ROS_DEBUG_STREAM("Deleting Marker: "<<id);
-      registeredMarkers_.erase(registeredMarkers_.begin() + index);
-    }
-  }
-}
+//void DynamicIntrospection::unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
+//  lock();
+//  if(!contains(registered_data_.registeredMarkers_, id)){
+//    ROS_ERROR_STREAM("Marker: "<<id<<" has NOT been registered");
+//    throw DoesNotExistingVariableException();
+//  }
+//  else{
+//    std::pair<std::string, visualization_msgs::MarkerArray*> p(id, variable);
+//    int index = indexVector(registered_data_.registeredMarkers_, p);
+//    if(index < 0){
+//      ROS_ERROR_STREAM("Marker : "<<id<<" has has been registered but the pointer to its data does not match!");
+//    }
+//    else{
+//      ROS_DEBUG_STREAM("Deleting Marker: "<<id);
+//      registered_data_.registeredMarkers_.erase(registered_data_.registeredMarkers_.begin() + index);
+//    }
+//  }
+//  unlock();
+//}

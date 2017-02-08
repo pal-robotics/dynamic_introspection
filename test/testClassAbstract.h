@@ -4,6 +4,8 @@
 class TestClassBase{
 public:
 
+  virtual ~TestClassBase(){}
+
   virtual void update() = 0;
 
 };

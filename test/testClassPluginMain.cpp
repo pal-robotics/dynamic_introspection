@@ -45,14 +45,22 @@ int main(int argc, char **argv) {
 
   ROS_INFO("Spinning node");
 
-  while(nh.ok()){
+  for(size_t i=0; i<50; ++i){
     tA->update();
     tB->update();
-
+    PUBLISH_DEBUG_DATA_TOPIC;
     std::cerr<<"*********"<<std::endl;
-    PUBLISH_DEBUG_DATA_TOPIC
-        ros::spinOnce();
     ros::Duration(0.1).sleep();
   }
+
+  tA.reset();
+
+  for(size_t i=0; i<50; ++i){
+    tB->update();
+    PUBLISH_DEBUG_DATA_TOPIC;
+    std::cerr<<"*********"<<std::endl;
+    ros::Duration(0.1).sleep();
+  }
+
   return 0;
 }

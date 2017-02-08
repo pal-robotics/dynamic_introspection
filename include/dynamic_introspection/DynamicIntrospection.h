@@ -15,11 +15,42 @@
 #include <rosbag/bag.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <realtime_tools/realtime_publisher.h>
+#include <Eigen/Dense>
 
 /**
  * @brief The DynamicIntrospection class allows to do dynamic instrospection of different
  * c++ types through ros topics and rosbag
  */
+
+struct DynamicIntrospectionData{
+
+  //Registered variables
+  std::vector<std::tuple<std::string, const int*, int> > registeredInt_;
+  std::vector<std::tuple<std::string, const double*, double> > registeredDouble_;
+  std::vector<std::tuple<std::string, const bool*, bool> > registeredBool_;
+  std::vector<std::tuple<std::string, const visualization_msgs::MarkerArray*, visualization_msgs::MarkerArray> > registeredMarkers_;
+
+  void copy(){
+
+    for(size_t i=0; i<registeredInt_.size(); ++i){
+      std::get<2>(registeredInt_[i]) = *std::get<1>(registeredInt_[i]);
+    }
+
+    for(size_t i=0; i<registeredDouble_.size(); ++i){
+      std::get<2>(registeredDouble_[i]) = *std::get<1>(registeredDouble_[i]);
+    }
+
+    for(size_t i=0; i<registeredBool_.size(); ++i){
+      std::get<2>(registeredBool_[i]) = *std::get<1>(registeredBool_[i]);
+    }
+
+    for(size_t i=0; i<registeredMarkers_.size(); ++i){
+      std::get<2>(registeredMarkers_[i]) = *std::get<1>(registeredMarkers_[i]);
+    }
+
+  }
+};
+
 class DynamicIntrospection{
 
 public:
@@ -28,21 +59,46 @@ public:
 
   virtual ~DynamicIntrospection();
 
-  void registerVariable(int *variable, const std::string &id);
-  void registerVariable(double *variable, const std::string &id);
-  void registerVariable(bool *variable, const std::string &id);
-  void registerVariable(visualization_msgs::MarkerArray *variable, const std::string &id);
+  void registerVariable(const int *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const double *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const Eigen::Vector3d *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const Eigen::Quaterniond *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const bool *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const visualization_msgs::MarkerArray *variable, const std::string &id, std::vector<std::string> &registeded_ids);
 
-  void unRegisterVariable(int *variable, const std::string &id);
-  void unRegisterVariable(double *variable, const std::string &id);
-  void unRegisterVariable(bool *variable, const std::string &id);
-  void unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id);
+  void unRegisterVariable(const std::string &id);
 
   void setOutputTopic(const std::string &outputTopic);
 
   void generateMessage();
 
-  void publishDataTopic();
+  bool trylock()
+  {
+    if (msg_mutex_.try_lock()){
+        return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  void lock()
+  {
+    msg_mutex_.lock();
+  }
+
+  void unlock()
+  {
+    msg_mutex_.unlock();
+  }
+
+  void unlockAndPublish()
+  {
+    msg_mutex_.unlock();
+    updated_cond_.notify_one();
+  }
+
+  void publishDataTopicRT();
 
   void publishDataBag();
 
@@ -54,35 +110,64 @@ private:
   static DynamicIntrospection* m_pInstance;
 
   DynamicIntrospection();
-  //DynamicIntrospection(ros::NodeHandle &nh, const std::string &topic);
+
+  void publishDataTopic();
 
   bool openedBag_;
   bool configured_;
 
   ros::NodeHandle node_handle_;
-  //ros::Publisher introspectionPub_;
-  boost::shared_ptr<realtime_tools::RealtimePublisher<dynamic_introspection::IntrospectionMsg> > introspectionPub_;
+  ros::Publisher introspectionPub_;
 
   rosbag::Bag bag_;
 
-  //Registered variables
-  std::vector< std::pair<std::string, int*> > registeredInt_;
-  std::vector< std::pair<std::string, double*> > registeredDouble_;
-  std::vector<std::pair<std::string, bool*> > registeredBool_;
-  std::vector<std::pair<std::string, visualization_msgs::MarkerArray*> > registeredMarkers_;
+  DynamicIntrospectionData registered_data_;
 
   dynamic_introspection::IntrospectionMsg introspectionMessage_;
+
+  boost::thread thread_;
+  boost::mutex msg_mutex_;  // Protects msg_
+
+  boost::mutex updated_cond__mutex_;
+  boost::condition_variable updated_cond_;
 
 };
 
 typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 
 
-#define REGISTER_VARIABLE(VARIABLE, ID)                               \
-   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
+//#define REGISTER_VARIABLE(VARIABLE, ID)                               \
+//   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
 
-#define UNREGISTER_VARIABLE(VARIABLE, ID)                               \
-   DynamicIntrospection::Instance()->unRegisterVariable(VARIABLE, ID);  \
+#define REGISTER_VARIABLE(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)  \
+   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR);  \
+
+//#define REGISTER_VARIABLE_3D(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)            \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.x(), std::string(ID) + "_X");     \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.y(), std::string(ID) + "_Y");     \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.z(), std::string(ID) + "_Z");     \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_X");                                \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_Y");                                \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_Z");                                \
+
+//#define REGISTER_VARIABLE_QUATERNION(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)            \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.x(), std::string(ID) + "_QX");     \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.y(), std::string(ID) + "_QY");     \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.z(), std::string(ID) + "_QZ");     \
+//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.w(), std::string(ID) + "_QW");     \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QX");                                \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QY");                                \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QZ");                                \
+//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QW");                                \
+
+
+#define UNREGISTER_VARIABLES(REGISTERED_VARIABLES_VECTOR)                                    \
+   for(size_t i=0; i<REGISTERED_VARIABLES_VECTOR.size(); ++i){                               \
+      DynamicIntrospection::Instance()->unRegisterVariable(REGISTERED_VARIABLES_VECTOR[i]);  \
+   }                                                                                         \
+
+//#define UNREGISTER_VARIABLE(VARIABLE)                               \
+//   DynamicIntrospection::Instance()->unRegisterVariable(VARIABLE);   \
 
 #define OPEN_BAG(BAG_NAME)                                            \
    DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
@@ -90,8 +175,8 @@ typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 #define PUBLISH_DEBUG_DATA_BAG                                        \
    DynamicIntrospection::Instance()->publishDataBag();                \
 
-#define PUBLISH_DEBUG_DATA_TOPIC                                        \
-   DynamicIntrospection::Instance()->publishDataTopic();                \
+#define PUBLISH_DEBUG_DATA_TOPIC                                      \
+   DynamicIntrospection::Instance()->publishDataTopicRT();            \
 
 #define CLOSE_BAG                                                     \
    DynamicIntrospection::Instance()->closeBag();                      \

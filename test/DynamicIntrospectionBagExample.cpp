@@ -11,13 +11,13 @@ int main(int argc, char **argv) {
 
   ros::NodeHandle nh("dynamic_introspection_test");
 
-
+  std::vector<std::string> registered_ids;
 
   bool bool_test = false;
 
  // DynamicIntrospection di(nh, "debug_test");
 
-  REGISTER_VARIABLE(&bool_test, "bool_test")
+  REGISTER_VARIABLE(&bool_test, "bool_test", registered_ids);
 
   ROS_INFO("Spinning node");
 
