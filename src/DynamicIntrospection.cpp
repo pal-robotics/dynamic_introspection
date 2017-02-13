@@ -95,6 +95,7 @@ void DynamicIntrospection::publishDataBag(){
   if(!openedBag_){
     ROS_ERROR_STREAM("Bag is not open");
   }
+  registered_data_.copy();
   generateMessage();
   bag_.write("/data", ros::Time::now(), introspectionMessage_);
 }
@@ -328,63 +329,3 @@ void DynamicIntrospection::unRegisterVariable(const std::string &id){
   }
   unlock();
 }
-
-//void DynamicIntrospection::unRegisterVariable(double *variable, const std::string &id){
-//  lock();
-//  if(!contains(registered_data_.registeredDouble_, id)){
-//    ROS_ERROR_STREAM("Double : "<<id<<" has NOT been registered");
-//    throw DoesNotExistingVariableException();
-//  }
-//  else{
-//    std::pair<std::string, double*> p(id, variable);
-//    int index = indexVector(registered_data_.registeredDouble_, p);
-//    if(index < 0){
-//      ROS_ERROR_STREAM("Double : "<<id<<" has has been registered but the pointer to its data does not match!");
-//    }
-//    else{
-//      ROS_DEBUG_STREAM("Deleting double: "<<id);
-//      registered_data_.registeredDouble_.erase(registered_data_.registeredDouble_.begin() + index);
-//    }
-//  }
-//  unlock();
-//}
-
-//void DynamicIntrospection::unRegisterVariable(bool *variable, const std::string &id){
-//  lock();
-//  if(!contains(registered_data_.registeredBool_, id)){
-//    ROS_ERROR_STREAM("Bool: "<<id<<" has NOT been registered");
-//    throw DoesNotExistingVariableException();
-//  }
-//  else{
-//    std::pair<std::string, bool*> p(id, variable);
-//    int index = indexVector(registered_data_.registeredBool_, p);
-//    if(index < 0){
-//      ROS_ERROR_STREAM("Bool : "<<id<<" has has been registered but the pointer to its data does not match!");
-//    }
-//    else{
-//      ROS_DEBUG_STREAM("Deleting bool: "<<id);
-//      registered_data_.registeredBool_.erase(registered_data_.registeredBool_.begin() + index);
-//    }
-//  }
-//  unlock();
-//}
-
-//void DynamicIntrospection::unRegisterVariable(visualization_msgs::MarkerArray *variable, const std::string &id){
-//  lock();
-//  if(!contains(registered_data_.registeredMarkers_, id)){
-//    ROS_ERROR_STREAM("Marker: "<<id<<" has NOT been registered");
-//    throw DoesNotExistingVariableException();
-//  }
-//  else{
-//    std::pair<std::string, visualization_msgs::MarkerArray*> p(id, variable);
-//    int index = indexVector(registered_data_.registeredMarkers_, p);
-//    if(index < 0){
-//      ROS_ERROR_STREAM("Marker : "<<id<<" has has been registered but the pointer to its data does not match!");
-//    }
-//    else{
-//      ROS_DEBUG_STREAM("Deleting Marker: "<<id);
-//      registered_data_.registeredMarkers_.erase(registered_data_.registeredMarkers_.begin() + index);
-//    }
-//  }
-//  unlock();
-//}
