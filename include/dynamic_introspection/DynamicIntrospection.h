@@ -135,39 +135,13 @@ private:
 
 typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 
-
-//#define REGISTER_VARIABLE(VARIABLE, ID)                               \
-//   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID);  \
-
 #define REGISTER_VARIABLE(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)  \
    DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR);  \
-
-//#define REGISTER_VARIABLE_3D(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)            \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.x(), std::string(ID) + "_X");     \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.y(), std::string(ID) + "_Y");     \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.z(), std::string(ID) + "_Z");     \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_X");                                \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_Y");                                \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_Z");                                \
-
-//#define REGISTER_VARIABLE_QUATERNION(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)            \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.x(), std::string(ID) + "_QX");     \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.y(), std::string(ID) + "_QY");     \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.z(), std::string(ID) + "_QZ");     \
-//  DynamicIntrospection::Instance()->registerVariable(&VARIABLE.w(), std::string(ID) + "_QW");     \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QX");                                \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QY");                                \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QZ");                                \
-//  REGISTERED_VARIABLES_VECTOR.push_back(std::string(ID) + "_QW");                                \
-
 
 #define UNREGISTER_VARIABLES(REGISTERED_VARIABLES_VECTOR)                                    \
    for(size_t i=0; i<REGISTERED_VARIABLES_VECTOR.size(); ++i){                               \
       DynamicIntrospection::Instance()->unRegisterVariable(REGISTERED_VARIABLES_VECTOR[i]);  \
    }                                                                                         \
-
-//#define UNREGISTER_VARIABLE(VARIABLE)                               \
-//   DynamicIntrospection::Instance()->unRegisterVariable(VARIABLE);   \
 
 #define OPEN_BAG(BAG_NAME)                                            \
    DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
