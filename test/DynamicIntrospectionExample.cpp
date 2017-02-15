@@ -15,15 +15,11 @@ int main(int argc, char **argv) {
   Eigen::Vector3d test_vector = Eigen::Vector3d::Zero();
   bool bool_test = false;
 
-  Eigen::Vector3d *test_vector_pointer;
-  test_vector_pointer->x();
-
   std::vector<std::string> registered_ids;
 
   //DynamicIntrospection di(nh, "debug_test");
 
   REGISTER_VARIABLE(&bool_test, "bool_test", registered_ids);
-  REGISTER_VARIABLE(&test_vector, "vector_test", registered_ids);
 
   ROS_INFO("Spinning node");
 
