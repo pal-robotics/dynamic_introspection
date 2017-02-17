@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2017-02-17)
+------------------
 * Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
 * Updated changelog
 * Fixed quaternion introspection
