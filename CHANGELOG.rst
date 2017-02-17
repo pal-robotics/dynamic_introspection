@@ -4,6 +4,15 @@ Changelog for package dynamic_introspection
 
 Forthcoming
 -----------
+* Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
+* Updated changelog
+* Fixed quaternion introspection
+* Fixed cppcheck example
+* removed comented code
+* removed comented code
+* Finished refactoring to make thread and realtime safe
+* Contributors: Hilario Tome
+
 * Fixed quaternion introspection
 * removed comented code
 * removed comented code
