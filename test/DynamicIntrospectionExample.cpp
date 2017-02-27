@@ -18,12 +18,12 @@ int main(int argc, char **argv) {
   Eigen::Vector3d *test_vector_pointer = new Eigen::Vector3d(0,0,0);
   test_vector_pointer->x();
 
+
   std::vector<std::string> registered_ids;
 
   //DynamicIntrospection di(nh, "debug_test");
 
   REGISTER_VARIABLE(&bool_test, "bool_test", registered_ids);
-  REGISTER_VARIABLE(&test_vector, "vector_test", registered_ids);
 
   ROS_INFO("Spinning node");
 

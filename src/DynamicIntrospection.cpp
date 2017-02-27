@@ -225,10 +225,10 @@ void DynamicIntrospection::registerVariable(const Eigen::Vector3d *variable, con
 }
 
 void DynamicIntrospection::registerVariable(const Eigen::Quaterniond *variable, const std::string &id, std::vector<std::string> &registeded_ids){
-//  registerVariable(variable->x(), id + "_QX", registeded_ids);
-//  registerVariable(&variable->y(), id + "_QY", registeded_ids);
-//  registerVariable(&variable->z(), id + "_QZ", registeded_ids);
-//  registerVariable(&variable->w(), id + "_QW", registeded_ids);
+  registerVariable(&variable->coeffs().x(), id + "_QX", registeded_ids);
+  registerVariable(&variable->coeffs().y(), id + "_QY", registeded_ids);
+  registerVariable(&variable->coeffs().z(), id + "_QZ", registeded_ids);
+  registerVariable(&variable->coeffs().w(), id + "_QW", registeded_ids);
 }
 
 void DynamicIntrospection::registerVariable(const bool *variable, const std::string &id, std::vector<std::string> &registeded_ids){
