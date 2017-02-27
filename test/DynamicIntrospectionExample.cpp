@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
   Eigen::Vector3d test_vector = Eigen::Vector3d::Zero();
   bool bool_test = false;
 
-  Eigen::Vector3d *test_vector_pointer;
+  Eigen::Vector3d *test_vector_pointer = new Eigen::Vector3d(0,0,0);
   test_vector_pointer->x();
 
   std::vector<std::string> registered_ids;
