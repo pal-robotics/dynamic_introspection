@@ -6,26 +6,85 @@
 #include <exception>
 
 template<typename T>
-  typename std::vector<T>::iterator
-  const_iterator_cast(std::vector<T>& v, typename std::vector<T>::const_iterator iter)
-  {
-    return v.begin() + (iter - v.cbegin());
-  }
+typename std::vector<T>::iterator
+const_iterator_cast(std::vector<T>& v, typename std::vector<T>::const_iterator iter)
+{
+  return v.begin() + (iter - v.cbegin());
+}
 
 struct ExistingVariableException : public std::exception
 {
+
+  ExistingVariableException(const std::string variable, DynamicIntrospection *di):
+    variable_(variable),
+    di_(di){
+  }
+
   const char * what () const throw ()
   {
-    return "Registering an existing variable";
+    std::stringstream ss;
+    ss<<"Registering an existing variable: "<<variable_<<std::endl;
+
+    ss<<"registered ints:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredInt_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredInt_[i])<<std::endl;
+    }
+    ss<<"registered double:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredDouble_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredDouble_[i])<<std::endl;
+    }
+    ss<<"registered bool:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredBool_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredBool_[i])<<std::endl;
+    }
+    ss<<"registered markers:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredMarkers_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredMarkers_[i])<<std::endl;
+    }
+
+    ROS_ERROR_STREAM(ss.str());
+    return ss.str().c_str();
   }
+
+  std::string variable_;
+  DynamicIntrospection *di_;
 };
 
 struct DoesNotExistingVariableException : public std::exception
 {
+
+  DoesNotExistingVariableException(const std::string variable, DynamicIntrospection *di):
+    variable_(variable),
+    di_(di){
+  }
+
   const char * what () const throw ()
   {
-    return "Trying to delete a variable that is not registered";
+    std::stringstream ss;
+    ss<<"Trying to delete a variable that is not registered: "<<variable_<<std::endl;
+    ss<<"registered ints:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredInt_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredInt_[i])<<std::endl;
+    }
+    ss<<"registered double:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredDouble_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredDouble_[i])<<std::endl;
+    }
+    ss<<"registered bool:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredBool_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredBool_[i])<<std::endl;
+    }
+    ss<<"registered markers:"<<std::endl;
+    for(size_t i=0; i<di_->getDataPtr()->registeredMarkers_.size(); ++i){
+      ss<<"    "<<std::get<0>(di_->getDataPtr()->registeredMarkers_[i])<<std::endl;
+    }
+
+    ROS_ERROR_STREAM(ss.str());
+    return ss.str().c_str();
   }
+
+  std::string variable_;
+  DynamicIntrospection *di_;
 };
 
 template<typename C>
@@ -123,7 +182,7 @@ void DynamicIntrospection::publishDataTopicRT(){
     updated_cond_.notify_one();
   }
   else{
-    ROS_WARN_STREAM("Missed introspection update cycle");
+    ROS_DEBUG_STREAM("Missed introspection update cycle");
   }
 }
 
@@ -167,8 +226,7 @@ void DynamicIntrospection::registerVariable(const int *variable, const std::stri
      contains(registered_data_.registeredDouble_, id) ||
      contains(registered_data_.registeredBool_, id) ||
      contains(registered_data_.registeredMarkers_, id)){
-    ROS_ERROR_STREAM(id<<" has allreday been registered");
-    throw ExistingVariableException();
+    throw ExistingVariableException(id, this);
   }
   else{
     ROS_DEBUG_STREAM("Registered int: "<<id);
@@ -186,28 +244,7 @@ void DynamicIntrospection::registerVariable(const double *variable, const std::s
      contains(registered_data_.registeredBool_, id) ||
      contains(registered_data_.registeredMarkers_, id)){
 
-    std::stringstream ss;
-    ss<<id<<" has allreday been registered"<<std::endl;
-
-    ss<<"registered ints:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredInt_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredInt_[i])<<std::endl;
-    }
-    ss<<"registered double:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredDouble_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredDouble_[i])<<std::endl;
-    }
-    ss<<"registered bool:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredBool_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredBool_[i])<<std::endl;
-    }
-    ss<<"registered markers:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredMarkers_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredMarkers_[i])<<std::endl;
-    }
-
-    ROS_ERROR_STREAM(ss.str());
-    throw ExistingVariableException();
+    throw ExistingVariableException(id, this);
   }
   else{
     ROS_DEBUG_STREAM("Registered double: "<<id);
@@ -237,8 +274,7 @@ void DynamicIntrospection::registerVariable(const bool *variable, const std::str
      contains(registered_data_.registeredDouble_, id) ||
      contains(registered_data_.registeredBool_, id) ||
      contains(registered_data_.registeredMarkers_, id)){
-    ROS_ERROR_STREAM(id<<" has allreday been registered");
-    throw ExistingVariableException();
+    throw ExistingVariableException(id, this);
   }
   else{
     ROS_DEBUG_STREAM("Registered bool: "<<id);
@@ -255,8 +291,7 @@ void DynamicIntrospection::registerVariable(const visualization_msgs::MarkerArra
      contains(registered_data_.registeredDouble_, id) ||
      contains(registered_data_.registeredBool_, id) ||
      contains(registered_data_.registeredMarkers_, id)){
-    ROS_ERROR_STREAM(id<<" has allreday been registered");
-    throw ExistingVariableException();
+    throw ExistingVariableException(id, this);
   }
   else{
     ROS_DEBUG_STREAM("Registered Marker: "<<id);
@@ -271,32 +306,15 @@ void DynamicIntrospection::registerVariable(const visualization_msgs::MarkerArra
 
 void DynamicIntrospection::unRegisterVariable(const std::string &id){
 
+  ROS_DEBUG_STREAM("unregistered variable: "<<id);
+
   lock();
   if(!(contains(registered_data_.registeredInt_, id) ||
-     !contains(registered_data_.registeredDouble_, id) ||
-     !contains(registered_data_.registeredBool_, id) ||
-     !contains(registered_data_.registeredMarkers_, id))){
+       !contains(registered_data_.registeredDouble_, id) ||
+       !contains(registered_data_.registeredBool_, id) ||
+       !contains(registered_data_.registeredMarkers_, id))){
 
-    std::stringstream ss;
-    ss<<id<<" has NOT been registered"<<std::endl;
-    ss<<"registered ints:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredInt_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredInt_[i])<<std::endl;
-    }
-    ss<<"registered double:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredDouble_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredDouble_[i])<<std::endl;
-    }
-    ss<<"registered bool:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredBool_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredBool_[i])<<std::endl;
-    }
-    ss<<"registered markers:"<<std::endl;
-    for(size_t i=0; i<registered_data_.registeredMarkers_.size(); ++i){
-      ss<<"    "<<std::get<0>(registered_data_.registeredMarkers_[i])<<std::endl;
-    }
-    ROS_ERROR_STREAM(ss.str());
-    throw DoesNotExistingVariableException();
+    throw DoesNotExistingVariableException(id, this);
   }
   else{
     int index_int = indexVector(registered_data_.registeredInt_, id);
@@ -321,11 +339,13 @@ void DynamicIntrospection::unRegisterVariable(const std::string &id){
       registered_data_.registeredMarkers_.erase(it);
     }
     else{
-      ROS_ERROR_STREAM(id<<" has NOT been registered");
-      throw DoesNotExistingVariableException();
+      throw DoesNotExistingVariableException(id, this);
     }
     ROS_DEBUG_STREAM("Deleting int: "<<id);
 
   }
   unlock();
+
+  ROS_DEBUG_STREAM("Succesfully deleted unregistered variable: "<<id);
+
 }

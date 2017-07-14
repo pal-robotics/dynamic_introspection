@@ -106,6 +106,10 @@ public:
 
   void openBag(std::string fileName);
 
+  const DynamicIntrospectionData* getDataPtr(){
+    return &registered_data_;
+  }
+
 private:
   static DynamicIntrospection* m_pInstance;
 
@@ -142,6 +146,7 @@ typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
    for(size_t i=0; i<REGISTERED_VARIABLES_VECTOR.size(); ++i){                               \
       DynamicIntrospection::Instance()->unRegisterVariable(REGISTERED_VARIABLES_VECTOR[i]);  \
    }                                                                                         \
+   REGISTERED_VARIABLES_VECTOR.clear();                                                      \
 
 #define OPEN_BAG(BAG_NAME)                                            \
    DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
