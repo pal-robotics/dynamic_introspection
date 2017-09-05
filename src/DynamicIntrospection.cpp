@@ -122,7 +122,7 @@ DynamicIntrospection* DynamicIntrospection::Instance(){
 DynamicIntrospection::DynamicIntrospection(){
 
   node_handle_ = ros::NodeHandle();
-  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("data", 10);
+  introspectionPub_ =  node_handle_.advertise<dynamic_introspection::IntrospectionMsg>("/introspection_data", 10);
   thread_ = boost::thread(&DynamicIntrospection::publishDataTopic, this);
 
 }
@@ -156,7 +156,7 @@ void DynamicIntrospection::publishDataBag(){
   }
   registered_data_.copy();
   generateMessage();
-  bag_.write("/data", ros::Time::now(), introspectionMessage_);
+  bag_.write("/introspection_data", ros::Time::now(), introspectionMessage_);
 }
 
 void DynamicIntrospection::publishDataTopic(){
@@ -167,8 +167,10 @@ void DynamicIntrospection::publishDataTopic(){
     updated_cond_.wait(lck);
 
     lock();
-    generateMessage();
-    introspectionPub_.publish(introspectionMessage_);
+    if(introspectionPub_.getNumSubscribers() > 0){
+      generateMessage();
+      introspectionPub_.publish(introspectionMessage_);
+    }
     unlock();
   }
 

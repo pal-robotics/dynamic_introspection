@@ -9,7 +9,8 @@ find_package(catkin REQUIRED COMPONENTS roscpp
   rosbag
   pluginlib
   control_toolbox
-  visualization_msgs)
+  visualization_msgs
+  backward_ros)
 
 find_package(cmake_modules REQUIRED)
 
