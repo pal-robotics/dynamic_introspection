@@ -12,12 +12,12 @@ const_iterator_cast(std::vector<T>& v, typename std::vector<T>::const_iterator i
   return v.begin() + (iter - v.cbegin());
 }
 
-struct ExistingVariableException : public std::exception
+struct ExistingVariableException : public std::runtime_error
 {
 
   ExistingVariableException(const std::string variable, DynamicIntrospection *di):
     variable_(variable),
-    di_(di){
+    di_(di), std::runtime_error(""){
   }
 
   const char * what () const throw ()
