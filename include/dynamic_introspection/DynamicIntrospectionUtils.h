@@ -6,6 +6,8 @@
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <Eigen/Dense>
 
+namespace dynamic_introspection{
+
 class IntrospectionBagReader{
 
 public:
@@ -31,23 +33,22 @@ public:
 
   void getVariable(const std::vector<std::string> &names, std::vector<Eigen::VectorXd> &value);
 
+  std::map<std::string, int> intNameMap_;
+  std::map<std::string, int> doubleNameMap_;
+  std::map<std::string, int> boolNameMap_;
+
 private:
 
   int nMessages_;
-
-//  std::vector<std::pair<std::string, std::vector<int> > > intValues_;
-//  std::vector<std::pair<std::string, std::vector<double> > > doubleValues_;
-//  std::vector<std::pair<std::string, std::vector<bool> > > boolValues_;
 
   std::vector<std::vector<int>  > intValues_;
   std::vector<std::vector<double> > doubleValues_;
   std::vector<std::vector<bool> > boolValues_;
 
-  std::map<std::string, int> intNameMap_;
-  std::map<std::string, int> doubleNameMap_;
-  std::map<std::string, int> boolNameMap_;
+
 
 };
 
+}
 
 #endif
