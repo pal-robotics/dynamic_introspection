@@ -56,7 +56,10 @@ struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
   IntrospectionBagReader *br_;
 };
 
-IntrospectionBagReader::IntrospectionBagReader(const std::string &packageName, const std::string &bagFileName){
+IntrospectionBagReader::IntrospectionBagReader(const std::string &packageName,
+                                               const std::string &bagFileName,
+                                               const std::string introspection_topic_name):
+  introspection_topic_name_(introspection_topic_name){
 
   ROS_INFO_STREAM("Reading bag: "<<bagFileName);
 
@@ -67,7 +70,9 @@ IntrospectionBagReader::IntrospectionBagReader(const std::string &packageName, c
 
 }
 
-IntrospectionBagReader::IntrospectionBagReader(const std::string &bagFileName){
+IntrospectionBagReader::IntrospectionBagReader(const std::string &bagFileName,
+                                               const std::string introspection_topic_name):
+  introspection_topic_name_(introspection_topic_name){
 
   ROS_INFO_STREAM("Reading bag: "<<bagFileName);
 
@@ -80,7 +85,7 @@ IntrospectionBagReader::IntrospectionBagReader(const std::string &bagFileName){
 void IntrospectionBagReader::readBag(rosbag::Bag &bag){
 
   std::vector<std::string> topics;
-  topics.push_back(std::string("/introspection_data"));
+  topics.push_back(std::string(introspection_topic_name_));
 
   rosbag::View view(bag, rosbag::TopicQuery(topics));
 

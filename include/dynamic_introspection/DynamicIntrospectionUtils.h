@@ -12,9 +12,12 @@ class IntrospectionBagReader{
 
 public:
 
-  IntrospectionBagReader(const std::string &packageName, const std::string &bagFileName);
+  IntrospectionBagReader(const std::string &packageName,
+                         const std::string &bagFileName,
+                         const std::string introspection_topic_name);
 
-  IntrospectionBagReader(const std::string &bagFileName);
+  IntrospectionBagReader(const std::string &bagFileName,
+                         const std::string introspection_topic_name);
 
   void readBag(rosbag::Bag &bag);
 
@@ -38,6 +41,8 @@ public:
   std::map<std::string, int> boolNameMap_;
 
 private:
+
+  std::string introspection_topic_name_;
 
   int nMessages_;
 
