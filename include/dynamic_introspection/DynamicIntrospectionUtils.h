@@ -6,14 +6,12 @@
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <Eigen/Dense>
 
-namespace dynamic_introspection{
-
-class IntrospectionBagReader{
-
+namespace dynamic_introspection
+{
+class IntrospectionBagReader
+{
 public:
-
-  IntrospectionBagReader(const std::string &packageName,
-                         const std::string &bagFileName,
+  IntrospectionBagReader(const std::string &packageName, const std::string &bagFileName,
                          const std::string introspection_topic_name);
 
   IntrospectionBagReader(const std::string &bagFileName,
@@ -21,14 +19,14 @@ public:
 
   void readBag(rosbag::Bag &bag);
 
-  int getNumberMessages();
+  unsigned int getNumberMessages();
 
   void getVariable(const std::string &variableId, std::vector<bool> &value);
 
   void getVariable(const std::string &variableId, std::vector<double> &value);
 
-  void getVariable(const std::string &variableId1, const std::string &variableId2, const std::string &variableId3,
-                   std::vector<Eigen::Vector3d> &value);
+  void getVariable(const std::string &variableId1, const std::string &variableId2,
+                   const std::string &variableId3, std::vector<Eigen::Vector3d> &value);
 
   void getVariable(const std::string &variableId1, const std::string &variable2,
                    const std::string &variable3, const std::string &variableId4,
@@ -41,19 +39,14 @@ public:
   std::map<std::string, int> boolNameMap_;
 
 private:
-
   std::string introspection_topic_name_;
 
-  int nMessages_;
+  unsigned int nMessages_;
 
-  std::vector<std::vector<int>  > intValues_;
+  std::vector<std::vector<int> > intValues_;
   std::vector<std::vector<double> > doubleValues_;
   std::vector<std::vector<bool> > boolValues_;
-
-
-
 };
-
 }
 
 #endif
