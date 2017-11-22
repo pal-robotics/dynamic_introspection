@@ -38,24 +38,21 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
   )
 
-add_library(${PROJECT_NAME} src/DynamicIntrospection.cpp src/DynamicIntrospectionUtils.cpp)
+add_library(${PROJECT_NAME} src/dynamic_introspection.cpp src/dynamic_introspection_utils.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
-add_executable(DynamicIntrospectionExample test/DynamicIntrospectionExample.cpp)
-target_link_libraries(DynamicIntrospectionExample ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(dynamic_introspection_example test/dynamic_introspection_example.cpp)
+target_link_libraries(dynamic_introspection_example ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(IntrospectionBagAnalyzer src/IntrospectionBagAnalyzer.cpp)
-target_link_libraries(IntrospectionBagAnalyzer ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(introspection_bag_analyzer src/introspection_bag_analyzer.cpp)
+target_link_libraries(introspection_bag_analyzer ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-#add_executable(mapIntrospectionTest test/mapIntrospectionTest.cpp)
-#target_link_libraries(mapIntrospectionTest ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(dynamic_introspection_bag_example test/dynamic_introspection_bag_example.cpp)
+target_link_libraries(dynamic_introspection_bag_example ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(DynamicIntrospectionBagExample test/DynamicIntrospectionBagExample.cpp)
-target_link_libraries(DynamicIntrospectionBagExample ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-add_executable(DynamicIntrospectionRosbagRecordingServer src/DynamicIntrospectionRosbagRecordingServer.cpp)
-target_link_libraries(DynamicIntrospectionRosbagRecordingServer ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(dynamic_introspection_rosbag_recording_server src/dynamic_introspection_rosbag_recording_server.cpp)
+target_link_libraries(dynamic_introspection_rosbag_recording_server ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_subdirectory(test)
 

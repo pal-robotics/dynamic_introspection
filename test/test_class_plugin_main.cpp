@@ -1,6 +1,6 @@
 #include <ros/ros.h>
-#include <dynamic_introspection/DynamicIntrospection.h>
-#include "testClassAbstract.h"
+#include <dynamic_introspection/dynamic_introspection.h>
+#include "test_class_abstract.h"
 #include <pluginlib/class_loader.h>
 
 int main(int argc, char **argv) {

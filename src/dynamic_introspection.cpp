@@ -1,4 +1,4 @@
-#include <dynamic_introspection/DynamicIntrospection.h>
+#include <dynamic_introspection/dynamic_introspection.h>
 #include <dynamic_introspection/BoolParameter.h>
 #include <dynamic_introspection/DoubleParameter.h>
 #include <dynamic_introspection/IntParameter.h>

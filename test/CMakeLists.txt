@@ -1,20 +1,20 @@
-add_executable(singletonTest singletonTest.cpp)
-target_link_libraries(singletonTest ${catkin_LIBRARIES})
+add_executable(singleton_test singleton_test.cpp)
+target_link_libraries(singleton_test ${catkin_LIBRARIES})
 
-add_library(testClassA testClassA.cpp)
-target_link_libraries(testClassA ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_library(test_class_a test_class_a.cpp)
+target_link_libraries(test_class_a ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_library(testClassB testClassB.cpp)
-target_link_libraries(testClassB ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_library(test_class_b test_class_b.cpp)
+target_link_libraries(test_class_b ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_library(testClassPlugins testClassPlugins.cpp)
-target_link_libraries(testClassPlugins testClassA testClassB ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_library(test_class_plugins test_class_plugins.cpp)
+target_link_libraries(test_class_plugins test_class_a test_class_b ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(testClassPluginMain testClassPluginMain.cpp)
-target_link_libraries(testClassPluginMain ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(test_class_plugin_main test_class_plugin_main.cpp)
+target_link_libraries(test_class_plugin_main ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(testClassMain testClassMain.cpp)
-target_link_libraries(testClassMain testClassA testClassB ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(test_class_main test_class_main.cpp)
+target_link_libraries(test_class_main test_class_a test_class_b ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_executable(thread_safe_test thread_safe/thread_safe_test.cpp)
 target_link_libraries(thread_safe_test ${PROJECT_NAME} ${catkin_LIBRARIES})

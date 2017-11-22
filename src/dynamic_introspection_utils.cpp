@@ -1,4 +1,4 @@
-#include <dynamic_introspection/DynamicIntrospectionUtils.h>
+#include <dynamic_introspection/dynamic_introspection_utils.h>
 #include <rosbag/view.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <boost/foreach.hpp>

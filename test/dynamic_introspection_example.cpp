@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <dynamic_introspection/DynamicIntrospection.h>
+#include <dynamic_introspection/dynamic_introspection.h>
 
 int main(int argc, char **argv) {
 

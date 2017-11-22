@@ -1,13 +1,13 @@
 #ifndef _TEST_CLASS_A_
 #define _TEST_CLASS_A_
 
-#include "testClassAbstract.h"
+#include "test_class_abstract.h"
 #include <vector>
 #include <string>
 
-class TestClassA: public TestClassBase{
+class TestClassA : public TestClassBase
+{
 public:
-
   TestClassA();
 
   virtual ~TestClassA();
@@ -19,7 +19,6 @@ private:
   double cont_double_2_;
   int cont_;
   std::vector<std::string> registered_ids_;
-
 };
 
 #endif

@@ -1,5 +1,5 @@
-#include "testClassA.h"
-#include "testClassB.h"
+#include "test_class_a.h"
+#include "test_class_b.h"
 
 #include <pluginlib/class_list_macros.h>
 
