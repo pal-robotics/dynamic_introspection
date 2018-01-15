@@ -2,6 +2,19 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* formating
+* formating
+* added bag reading topic parameter
+* fixed introspection utils
+* changed dynamic introspection execption to run_time exception
+* added get number of subscribers
+* clean up
+* Fixed merge
+* Fixed bug in as flag compilation error
+* Contributors: Adria Roig, Hilario Tome, Hilario Tomé
+
 0.0.6 (2017-02-17)
 ------------------
 * Merge branch 'dubnium-devel' of gitlab:control/dynamic_introspection into dubnium-devel
