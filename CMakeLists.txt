@@ -4,7 +4,7 @@ project(dynamic_introspection)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS roscpp
+set(CATKIN_COMPONENTS roscpp
   message_generation
   rosbag
   pluginlib
@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp
   visualization_msgs
   backward_ros)
 
-find_package(cmake_modules REQUIRED)
+find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMPONENTS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
@@ -28,7 +28,7 @@ generate_messages(DEPENDENCIES visualization_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp rosbag
+  CATKIN_DEPENDS ${CATKIN_COMPONENTS}
   DEPENDS Eigen
   )
 
