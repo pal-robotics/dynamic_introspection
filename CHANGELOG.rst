@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2018-03-19)
+------------------
 * added install rules for matlab folder and removed deprecated matlab files
 * Merge branch 'add-stamp' into 'erbium-devel'
   Add timestamp to DynamicIntrospection message
