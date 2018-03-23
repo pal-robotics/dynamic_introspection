@@ -190,7 +190,7 @@ void DynamicIntrospection::publishDataTopicRT(){
 
 void DynamicIntrospection::generateMessage(){
 
-  introspectionMessage_.stamp = ros::Time::now();
+  introspectionMessage_.header.stamp = ros::Time::now();
   introspectionMessage_.ints.resize(registered_data_.registeredInt_.size());
   introspectionMessage_.doubles.resize(registered_data_.registeredDouble_.size());
   introspectionMessage_.bools.resize(registered_data_.registeredBool_.size());
