@@ -2,6 +2,14 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'header_stamp' into 'erbium-devel'
+  added header stamp
+  See merge request control/dynamic_introspection!2
+* added header stamp
+* Contributors: Hilario Tome
+
 1.0.0 (2018-03-19)
 ------------------
 * added install rules for matlab folder and removed deprecated matlab files
