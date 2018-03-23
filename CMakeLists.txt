@@ -10,7 +10,8 @@ set(CATKIN_COMPONENTS roscpp
   pluginlib
   control_toolbox
   visualization_msgs
-  backward_ros)
+  backward_ros
+  std_msgs)
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMPONENTS})
 

@@ -19,6 +19,7 @@
   <depend>control_toolbox</depend>
   <depend>eigen</depend>
   <depend>backward_ros</depend>
+  <depend>std_msgs</depend>
 
   <export>
      <dynamic_introspection plugin="${prefix}/test/testPlugins.xml" />
