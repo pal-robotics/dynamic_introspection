@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2018-03-23)
+------------------
 * Merge branch 'header_stamp' into 'erbium-devel'
   added header stamp
   See merge request control/dynamic_introspection!2
