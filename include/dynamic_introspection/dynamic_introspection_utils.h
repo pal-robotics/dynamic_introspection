@@ -27,13 +27,11 @@ public:
   void getVariable(const std::string &variableId, std::vector<double> &value,
                    const bool throw_not_existing = true);
 
-  void getVariable(const std::string &variableId1, const std::string &variableId2,
-                   const std::string &variableId3, std::vector<Eigen::Vector3d> &value,
+  void getVariable(const std::string &variableId, std::vector<Eigen::Vector3d> &value,
                    const bool throw_not_existing = true);
 
-  void getVariable(const std::string &variableId1, const std::string &variable2,
-                   const std::string &variable3, const std::string &variableId4,
-                   std::vector<Eigen::Quaterniond> &value, const bool throw_not_existing = true);
+  void getVariable(const std::string &variable_id, std::vector<Eigen::Quaterniond> &value,
+                   const bool throw_not_existing = true);
 
   //  void getVariable(const std::vector<std::string> &names, std::vector<Eigen::VectorXd>
   //  &value,

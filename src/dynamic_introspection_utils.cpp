@@ -157,7 +157,6 @@ unsigned int IntrospectionBagReader::getNumberMessages()
 void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<bool> &value, const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
   value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
@@ -177,7 +176,6 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
 void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<double> &value, const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
   value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
@@ -194,31 +192,28 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
   }
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId1,
-                                         const std::string &variableId2,
-                                         const std::string &variableId3,
+void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<Eigen::Vector3d> &value,
                                          const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
   value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
     int index1 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId1, index1) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId + "_X", index1) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId1, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_X", this);
     }
     int index2 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId2, index2) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId + "_Y", index2) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId2, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Y", this);
     }
     int index3 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId3, index3) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId + "_Z", index3) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId3, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Z", this);
     }
 
     if ((index1 >= 0) && (index2 >= 0) && (index3 >= 0))
@@ -231,38 +226,34 @@ void IntrospectionBagReader::getVariable(const std::string &variableId1,
   }
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId1,
-                                         const std::string &variableId2,
-                                         const std::string &variableId3,
-                                         const std::string &variableId4,
+void IntrospectionBagReader::getVariable(const std::string &variable_id,
                                          std::vector<Eigen::Quaterniond> &value,
                                          const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
   value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
     int index1 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId1, index1) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QX", index1) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId1, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QX", this);
     }
     int index2 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId2, index2) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QY", index2) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId2, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QY", this);
     }
     int index3 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId3, index3) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QZ", index3) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId3, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QZ", this);
     }
 
     int index4 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId4, index4) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QW", index4) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId3, this);
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QW", this);
     }
 
     if ((index1 >= 0) && (index2 >= 0) && (index3 >= 0) && (index4 >= 0))
