@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dynamic_introspection</name>
-  <version>0.1.0</version>
+  <version>1.0.1</version>
   <description>The dynamic_introspection package</description>
 
   <maintainer email="hilario.tome@pal-robotics.com">Hilario Tomé</maintainer>
@@ -19,6 +19,7 @@
   <depend>control_toolbox</depend>
   <depend>eigen</depend>
   <depend>backward_ros</depend>
+  <depend>std_msgs</depend>
 
   <export>
      <dynamic_introspection plugin="${prefix}/test/testPlugins.xml" />

@@ -10,7 +10,8 @@ set(CATKIN_COMPONENTS roscpp
   pluginlib
   control_toolbox
   visualization_msgs
-  backward_ros)
+  backward_ros
+  std_msgs)
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMPONENTS})
 
@@ -65,3 +66,7 @@ install(TARGETS ${PROJECT_NAME}
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   )
+
+install(DIRECTORY matlab/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+
