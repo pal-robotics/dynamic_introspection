@@ -2,6 +2,7 @@
 #include <rosbag/view.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <boost/foreach.hpp>
+#include <pal_utils/nan_detector.h>
 
 #define foreach BOOST_FOREACH
 
@@ -22,8 +23,9 @@ bool getMapValue(const std::map<Key, Value, Comparator, Alloc> &my_map, Key key,
 
 struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
 {
-  DoesNotExistingVariableExceptionUtils(const std::string &name, IntrospectionBagReader *br)
-    : std::runtime_error(""), br_(br), variable_name_(name)
+  DoesNotExistingVariableExceptionUtils(const unsigned index, const std::string &name,
+                                        IntrospectionBagReader *br)
+    : index_(index), std::runtime_error(""), br_(br), variable_name_(name)
   {
   }
 
@@ -32,17 +34,18 @@ struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
     std::stringstream ss;
     ss << "Variable does not exist: " << variable_name_ << std::endl;
     ss << "Existing variables: " << std::endl;
-    for (auto it = br_->doubleNameMap_.begin(); it != br_->doubleNameMap_.end(); ++it)
+    for (auto it = br_->doubleNameMap_[index_].begin();
+         it != br_->doubleNameMap_[index_].end(); ++it)
     {
       ss << "   " << it->first << std::endl;
     }
 
-    for (auto it = br_->intNameMap_.begin(); it != br_->intNameMap_.end(); ++it)
+    for (auto it = br_->intNameMap_[index_].begin(); it != br_->intNameMap_[index_].end(); ++it)
     {
       ss << "   " << it->first << std::endl;
     }
 
-    for (auto it = br_->boolNameMap_.begin(); it != br_->boolNameMap_.end(); ++it)
+    for (auto it = br_->boolNameMap_[index_].begin(); it != br_->boolNameMap_[index_].end(); ++it)
     {
       ss << "   " << it->first << std::endl;
     }
@@ -51,6 +54,7 @@ struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
     return ss.str().c_str();
   }
 
+  unsigned int index_;
   std::string variable_name_;
   IntrospectionBagReader *br_;
 };
@@ -87,47 +91,38 @@ void IntrospectionBagReader::readBag(rosbag::Bag &bag)
 
   rosbag::View view(bag, rosbag::TopicQuery(topics));
 
-  bool firstMessage = true;
-
   nMessages_ = view.size();
 
   ROS_INFO_STREAM("Number of messages: " << nMessages_);
 
   int counter = 0;
 
+  boolNameMap_.resize(nMessages_);
+  intNameMap_.resize(nMessages_);
+  doubleNameMap_.resize(nMessages_);
+
   foreach (rosbag::MessageInstance const m, view)
   {
     dynamic_introspection::IntrospectionMsg::ConstPtr s =
         m.instantiate<dynamic_introspection::IntrospectionMsg>();
 
-    if (firstMessage)
+    boolValues_.resize(s->bools.size());
+    for (size_t i = 0; i < s->bools.size(); ++i)
     {
-      ROS_INFO_STREAM("Number of Bool parameters: " << s->bools.size());
-
-      boolValues_.resize(s->bools.size());
-      for (size_t i = 0; i < s->bools.size(); ++i)
-      {
-        boolValues_[i].resize(nMessages_);
-        boolNameMap_[s->bools[i].name] = i;
-      }
-
-      ROS_INFO_STREAM("Number of Int parameters: " << s->ints.size());
-      intValues_.resize(s->ints.size());
-      for (size_t i = 0; i < s->ints.size(); ++i)
-      {
-        intValues_[i].resize(nMessages_);
-        intNameMap_[s->ints[i].name] = i;
-      }
-
-      ROS_INFO_STREAM("Number of Double parameters: " << s->doubles.size());
-      doubleValues_.resize(s->doubles.size());
-      for (size_t i = 0; i < s->doubles.size(); ++i)
-      {
-        doubleValues_[i].resize(nMessages_);
-        doubleNameMap_[s->doubles[i].name] = i;
-      }
-
-      firstMessage = false;
+      boolValues_[i].reserve(nMessages_);
+      boolNameMap_[counter][s->bools[i].name] = i;
+    }
+    intValues_.resize(s->ints.size());
+    for (size_t i = 0; i < s->ints.size(); ++i)
+    {
+      intValues_[i].reserve(nMessages_);
+      intNameMap_[counter][s->ints[i].name] = i;
+    }
+    doubleValues_.resize(s->doubles.size());
+    for (size_t i = 0; i < s->doubles.size(); ++i)
+    {
+      doubleValues_[i].reserve(nMessages_);
+      doubleNameMap_[counter][s->doubles[i].name] = i;
     }
 
     for (size_t i = 0; i < boolValues_.size(); ++i)
@@ -146,8 +141,9 @@ void IntrospectionBagReader::readBag(rosbag::Bag &bag)
     }
 
     ++counter;
-    ROS_INFO_STREAM_THROTTLE(
-        1.0, "Reading percentage of data: " << ((double)counter / (double)nMessages_) * 100. << " %");
+    ROS_INFO_STREAM_THROTTLE(1.0,
+                             "Reading percentage of data: "
+                                 << ((double)counter / (double)nMessages_) * 100. << " %");
   }
 
   ROS_INFO_STREAM("Finished reading bag");
@@ -158,122 +154,140 @@ unsigned int IntrospectionBagReader::getNumberMessages()
   return nMessages_;
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId, std::vector<bool> &value)
+void IntrospectionBagReader::getVariable(const std::string &variableId,
+                                         std::vector<bool> &value, const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
-  value.resize(nMessages_);
-  int index;
-  if (!getMapValue(boolNameMap_, variableId, index))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId, this);
-  }
+  value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
-    value[i] = boolValues_[index][i];
+    int index = -1;
+    if (!getMapValue(boolNameMap_[i], variableId, index) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variableId, this);
+    }
+    if (index >= 0)
+    {
+      value.push_back(boolValues_[index][i]);
+    }
   }
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId, std::vector<double> &value)
+void IntrospectionBagReader::getVariable(const std::string &variableId,
+                                         std::vector<double> &value, const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
-  value.resize(nMessages_);
-  int index;
-  if (!getMapValue(doubleNameMap_, variableId, index))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId, this);
-  }
+  value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
-    value[i] = doubleValues_[index][i];
+    int index = -1;
+    if (!getMapValue(doubleNameMap_[i], variableId, index) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variableId, this);
+    }
+    if (index >= 0)
+    {
+      value.push_back(doubleValues_[index][i]);
+    }
   }
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId1,
-                                         const std::string &variableId2,
-                                         const std::string &variableId3,
-                                         std::vector<Eigen::Vector3d> &value)
+void IntrospectionBagReader::getVariable(const std::string &variableId,
+                                         std::vector<Eigen::Vector3d> &value,
+                                         const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
-  value.resize(nMessages_);
-  int index1;
-  if (!getMapValue(doubleNameMap_, variableId1, index1))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId1, this);
-  }
-  int index2;
-  if (!getMapValue(doubleNameMap_, variableId2, index2))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId2, this);
-  }
-  int index3;
-  if (!getMapValue(doubleNameMap_, variableId3, index3))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId3, this);
-  }
+  value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
-    value[i] = Eigen::Vector3d(doubleValues_[index1][i], doubleValues_[index2][i],
-                               doubleValues_[index3][i]);
+    int index1 = -1;
+    if (!getMapValue(doubleNameMap_[i], variableId + "_X", index1) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_X", this);
+    }
+    int index2 = -1;
+    if (!getMapValue(doubleNameMap_[i], variableId + "_Y", index2) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Y", this);
+    }
+    int index3 = -1;
+    if (!getMapValue(doubleNameMap_[i], variableId + "_Z", index3) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Z", this);
+    }
+
+    if ((index1 >= 0) && (index2 >= 0) && (index3 >= 0))
+    {
+      Eigen::Vector3d v(doubleValues_[index1][i], doubleValues_[index2][i],
+                        doubleValues_[index3][i]);
+      nanDetectedEigen(v);
+      value.push_back(v);
+    }
   }
 }
 
-void IntrospectionBagReader::getVariable(const std::string &variableId1,
-                                         const std::string &variableId2,
-                                         const std::string &variableId3,
-                                         const std::string &variableId4,
-                                         std::vector<Eigen::Quaterniond> &value)
+void IntrospectionBagReader::getVariable(const std::string &variable_id,
+                                         std::vector<Eigen::Quaterniond> &value,
+                                         const bool throw_not_existing)
 {
-  assert(nMessages_ == value.size());
-  value.resize(nMessages_);
-  int index1;
-  if (!getMapValue(doubleNameMap_, variableId1, index1))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId1, this);
-  }
-  int index2;
-  if (!getMapValue(doubleNameMap_, variableId2, index2))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId2, this);
-  }
-  int index3;
-  if (!getMapValue(doubleNameMap_, variableId3, index3))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId3, this);
-  }
-
-  int index4;
-  if (!getMapValue(doubleNameMap_, variableId4, index4))
-  {
-    throw DoesNotExistingVariableExceptionUtils(variableId3, this);
-  }
+  value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
-    value[i] = Eigen::Quaterniond(doubleValues_[index4][i], doubleValues_[index1][i],
-                                  doubleValues_[index2][i], doubleValues_[index3][i]);
+    int index1 = -1;
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QX", index1) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QX", this);
+    }
+    int index2 = -1;
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QY", index2) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QY", this);
+    }
+    int index3 = -1;
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QZ", index3) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QZ", this);
+    }
+
+    int index4 = -1;
+    if (!getMapValue(doubleNameMap_[i], variable_id + "_QW", index4) && throw_not_existing)
+    {
+      throw DoesNotExistingVariableExceptionUtils(i, variable_id + "_QW", this);
+    }
+
+    if ((index1 >= 0) && (index2 >= 0) && (index3 >= 0) && (index4 >= 0))
+    {
+      value.push_back(Eigen::Quaterniond(doubleValues_[index4][i], doubleValues_[index1][i],
+                                         doubleValues_[index2][i], doubleValues_[index3][i]));
+    }
   }
 }
 
+/*
 void IntrospectionBagReader::getVariable(const std::vector<std::string> &names,
-                                         std::vector<Eigen::VectorXd> &value)
+                                         std::vector<Eigen::VectorXd> &value,
+                                         const bool throw_not_existing)
 {
+  Eigen::VectorXd temp(names.size());
+  value.reserve(nMessages_);
   for (size_t i = 0; i < names.size(); ++i)
   {
     assert(nMessages_ == value[i].size());
 
     int index;
-    if (!getMapValue(doubleNameMap_, names[i], index))
+    if (!getMapValue(doubleNameMap_, names[i], index) && throw_not_existing)
     {
       throw DoesNotExistingVariableExceptionUtils(names[i], this);
     }
 
     for (size_t j = 0; j < nMessages_; ++j)
     {
-      value[i](j) = doubleValues_[i][j];
+      temp(j) = doubleValues_[i][j];
     }
+
+    value.push_back(temp);
   }
 }
+*/
 }

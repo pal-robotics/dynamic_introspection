@@ -4,14 +4,16 @@ project(dynamic_introspection)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 
-set(CATKIN_COMPONENTS roscpp
+set(CATKIN_COMPONENTS 
+  roscpp
   message_generation
   rosbag
   pluginlib
   control_toolbox
   visualization_msgs
   backward_ros
-  std_msgs)
+  std_msgs
+  pal_utils)
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMPONENTS})
 

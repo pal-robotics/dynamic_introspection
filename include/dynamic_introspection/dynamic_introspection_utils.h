@@ -21,31 +21,34 @@ public:
 
   unsigned int getNumberMessages();
 
-  void getVariable(const std::string &variableId, std::vector<bool> &value);
+  void getVariable(const std::string &variableId, std::vector<bool> &value,
+                   const bool throw_not_existing = true);
 
-  void getVariable(const std::string &variableId, std::vector<double> &value);
+  void getVariable(const std::string &variableId, std::vector<double> &value,
+                   const bool throw_not_existing = true);
 
-  void getVariable(const std::string &variableId1, const std::string &variableId2,
-                   const std::string &variableId3, std::vector<Eigen::Vector3d> &value);
+  void getVariable(const std::string &variableId, std::vector<Eigen::Vector3d> &value,
+                   const bool throw_not_existing = true);
 
-  void getVariable(const std::string &variableId1, const std::string &variable2,
-                   const std::string &variable3, const std::string &variableId4,
-                   std::vector<Eigen::Quaterniond> &value);
+  void getVariable(const std::string &variable_id, std::vector<Eigen::Quaterniond> &value,
+                   const bool throw_not_existing = true);
 
-  void getVariable(const std::vector<std::string> &names, std::vector<Eigen::VectorXd> &value);
+  //  void getVariable(const std::vector<std::string> &names, std::vector<Eigen::VectorXd>
+  //  &value,
+  //                   const bool throw_not_existing = true);
 
-  std::map<std::string, int> intNameMap_;
-  std::map<std::string, int> doubleNameMap_;
-  std::map<std::string, int> boolNameMap_;
+  std::vector<std::map<std::string, int>> intNameMap_;
+  std::vector<std::map<std::string, int>> doubleNameMap_;
+  std::vector<std::map<std::string, int>> boolNameMap_;
 
 private:
   std::string introspection_topic_name_;
 
   unsigned int nMessages_;
 
-  std::vector<std::vector<int> > intValues_;
-  std::vector<std::vector<double> > doubleValues_;
-  std::vector<std::vector<bool> > boolValues_;
+  std::vector<std::vector<int>> intValues_;
+  std::vector<std::vector<double>> doubleValues_;
+  std::vector<std::vector<bool>> boolValues_;
 };
 }
 
