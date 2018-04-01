@@ -20,8 +20,8 @@ Changelog for package dynamic_introspection
 * changed to package2
 * Contributors: Hilario Tome, Victor Lopez
 
-Forthcoming
------------
+1.0.2 (2018-04-01)
+------------------
 * Merge branch 'concurrency' into 'erbium-devel'
   Concurrency
   See merge request control/dynamic_introspection!3
