@@ -20,6 +20,33 @@ Changelog for package dynamic_introspection
 * changed to package2
 * Contributors: Hilario Tome, Victor Lopez
 
+Forthcoming
+-----------
+* Merge branch 'concurrency' into 'erbium-devel'
+  Concurrency
+  See merge request control/dynamic_introspection!3
+* added missing pal_utils depend
+* fixed merge
+* fixed utils
+* 1.0.1
+* updated changelog
+* Merge branch 'header_stamp' into 'erbium-devel'
+  added header stamp
+  See merge request control/dynamic_introspection!2
+* added header stamp
+* 1.0.0
+* Update changelog
+* added install rules for matlab folder and removed deprecated matlab files
+* added support for intermidient logged variables
+* Merge branch 'add-stamp' into 'erbium-devel'
+  Add timestamp to DynamicIntrospection message
+  See merge request control/dynamic_introspection!1
+* Add timestamp to DynamicIntrospection message
+* Merge branch 'add-stamp' into erbium-devel
+* changed to package2
+* Add timestamp to DynamicIntrospection message
+* Contributors: Hilario Tome, Victor Lopez
+
 0.1.0 (2018-01-15)
 ------------------
 * formating
