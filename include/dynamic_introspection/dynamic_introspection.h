@@ -22,49 +22,57 @@
  * c++ types through ros topics and rosbag
  */
 
-struct DynamicIntrospectionData{
+struct DynamicIntrospectionData
+{
+  // Registered variables
+  std::vector<std::tuple<std::string, const int *, int> > registeredInt_;
+  std::vector<std::tuple<std::string, const double *, double> > registeredDouble_;
+  std::vector<std::tuple<std::string, const bool *, bool> > registeredBool_;
+  std::vector<std::tuple<std::string, const visualization_msgs::MarkerArray *, visualization_msgs::MarkerArray> > registeredMarkers_;
 
-  //Registered variables
-  std::vector<std::tuple<std::string, const int*, int> > registeredInt_;
-  std::vector<std::tuple<std::string, const double*, double> > registeredDouble_;
-  std::vector<std::tuple<std::string, const bool*, bool> > registeredBool_;
-  std::vector<std::tuple<std::string, const visualization_msgs::MarkerArray*, visualization_msgs::MarkerArray> > registeredMarkers_;
-
-  void copy(){
-
-    for(size_t i=0; i<registeredInt_.size(); ++i){
+  void copy()
+  {
+    for (size_t i = 0; i < registeredInt_.size(); ++i)
+    {
       std::get<2>(registeredInt_[i]) = *std::get<1>(registeredInt_[i]);
     }
 
-    for(size_t i=0; i<registeredDouble_.size(); ++i){
+    for (size_t i = 0; i < registeredDouble_.size(); ++i)
+    {
       std::get<2>(registeredDouble_[i]) = *std::get<1>(registeredDouble_[i]);
     }
 
-    for(size_t i=0; i<registeredBool_.size(); ++i){
+    for (size_t i = 0; i < registeredBool_.size(); ++i)
+    {
       std::get<2>(registeredBool_[i]) = *std::get<1>(registeredBool_[i]);
     }
 
-    for(size_t i=0; i<registeredMarkers_.size(); ++i){
+    for (size_t i = 0; i < registeredMarkers_.size(); ++i)
+    {
       std::get<2>(registeredMarkers_[i]) = *std::get<1>(registeredMarkers_[i]);
     }
-
   }
 };
 
-class DynamicIntrospection{
-
+class DynamicIntrospection
+{
 public:
-
-  static DynamicIntrospection* Instance();
+  static DynamicIntrospection *Instance();
 
   virtual ~DynamicIntrospection();
 
-  void registerVariable(const int *variable, const std::string &id, std::vector<std::string> &registeded_ids);
-  void registerVariable(const double *variable, const std::string &id, std::vector<std::string> &registeded_ids);
-  void registerVariable(const Eigen::Vector3d *variable, const std::string &id, std::vector<std::string> &registeded_ids);
-  void registerVariable(const Eigen::Quaterniond *variable, const std::string &id, std::vector<std::string> &registeded_ids);
-  void registerVariable(const bool *variable, const std::string &id, std::vector<std::string> &registeded_ids);
-  void registerVariable(const visualization_msgs::MarkerArray *variable, const std::string &id, std::vector<std::string> &registeded_ids);
+  void registerVariable(const int *variable, const std::string &id,
+                        std::vector<std::string> &registeded_ids);
+  void registerVariable(const double *variable, const std::string &id,
+                        std::vector<std::string> &registeded_ids);
+  void registerVariable(const Eigen::Vector3d *variable, const std::string &id,
+                        std::vector<std::string> &registeded_ids);
+  void registerVariable(const Eigen::Quaterniond *variable, const std::string &id,
+                        std::vector<std::string> &registeded_ids);
+  void registerVariable(const bool *variable, const std::string &id,
+                        std::vector<std::string> &registeded_ids);
+  void registerVariable(const visualization_msgs::MarkerArray *variable,
+                        const std::string &id, std::vector<std::string> &registeded_ids);
 
   void unRegisterVariable(const std::string &id);
 
@@ -74,10 +82,12 @@ public:
 
   bool trylock()
   {
-    if (msg_mutex_.try_lock()){
-        return true;
+    if (msg_mutex_.try_lock())
+    {
+      return true;
     }
-    else{
+    else
+    {
       return false;
     }
   }
@@ -106,12 +116,13 @@ public:
 
   void openBag(std::string fileName);
 
-  const DynamicIntrospectionData* getDataPtr(){
+  const DynamicIntrospectionData *getDataPtr()
+  {
     return &registered_data_;
   }
 
 private:
-  static DynamicIntrospection* m_pInstance;
+  static DynamicIntrospection *m_pInstance;
 
   DynamicIntrospection();
 
@@ -134,34 +145,30 @@ private:
 
   boost::mutex updated_cond__mutex_;
   boost::condition_variable updated_cond_;
-
 };
 
 typedef boost::shared_ptr<DynamicIntrospection> DynamicIntrospectionPtr;
 
-#define REGISTER_VARIABLE(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)  \
-   DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR);  \
+#define REGISTER_VARIABLE(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR)                     \
+  DynamicIntrospection::Instance()->registerVariable(VARIABLE, ID, REGISTERED_VARIABLES_VECTOR);
 
-#define UNREGISTER_VARIABLES(REGISTERED_VARIABLES_VECTOR)                                    \
-   for(size_t i=0; i<REGISTERED_VARIABLES_VECTOR.size(); ++i){                               \
-      DynamicIntrospection::Instance()->unRegisterVariable(REGISTERED_VARIABLES_VECTOR[i]);  \
-   }                                                                                         \
-   REGISTERED_VARIABLES_VECTOR.clear();                                                      \
+#define UNREGISTER_VARIABLES(REGISTERED_VARIABLES_VECTOR)                                 \
+  for (size_t i = 0; i < REGISTERED_VARIABLES_VECTOR.size(); ++i)                         \
+  {                                                                                       \
+    DynamicIntrospection::Instance()->unRegisterVariable(REGISTERED_VARIABLES_VECTOR[i]); \
+  }                                                                                       \
+  REGISTERED_VARIABLES_VECTOR.clear();
 
-#define OPEN_BAG(BAG_NAME)                                            \
-   DynamicIntrospection::Instance()->openBag(BAG_NAME);               \
+#define OPEN_BAG(BAG_NAME) DynamicIntrospection::Instance()->openBag(BAG_NAME);
 
-#define PUBLISH_DEBUG_DATA_BAG                                        \
-   DynamicIntrospection::Instance()->publishDataBag();                \
+#define PUBLISH_DEBUG_DATA_BAG DynamicIntrospection::Instance()->publishDataBag();
 
-#define PUBLISH_DEBUG_DATA_TOPIC                                      \
-   DynamicIntrospection::Instance()->publishDataTopicRT();            \
+#define PUBLISH_DEBUG_DATA_TOPIC DynamicIntrospection::Instance()->publishDataTopicRT();
 
-#define CLOSE_BAG                                                     \
-   DynamicIntrospection::Instance()->closeBag();                      \
+#define CLOSE_BAG DynamicIntrospection::Instance()->closeBag();
 
-#define CONFIGURE_OUTPUT_TOPIC(TOPIC_NAME)                            \
-   DynamicIntrospection::Instance()->setOutputTopic(TOPIC_NAME);      \
+#define CONFIGURE_OUTPUT_TOPIC(TOPIC_NAME)                                               \
+  DynamicIntrospection::Instance()->setOutputTopic(TOPIC_NAME);
 
 
 #endif
