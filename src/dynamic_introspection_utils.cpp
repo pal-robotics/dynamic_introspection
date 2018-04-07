@@ -196,35 +196,57 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<Eigen::Vector3d> &value,
                                          const bool throw_not_existing)
 {
+  std::vector<std::string> ids;
+  ids.push_back(variableId + "_X");
+  ids.push_back(variableId + "_Y");
+  ids.push_back(variableId + "_Z");
+  getVariable(ids, value, throw_not_existing);
+}
+
+void IntrospectionBagReader::getVariable(const std::vector<std::string> &variableId,
+                                         std::vector<Eigen::Vector3d> &value,
+                                         const bool throw_not_existing)
+{
   value.reserve(nMessages_);
+
+  assert(variableId.size() == 3);
 
   for (size_t i = 0; i < nMessages_; ++i)
   {
     int index1 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId + "_X", index1) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId[0], index1) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_X", this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId[0], this);
     }
     int index2 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId + "_Y", index2) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId[1], index2) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Y", this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId[1], this);
     }
     int index3 = -1;
-    if (!getMapValue(doubleNameMap_[i], variableId + "_Z", index3) && throw_not_existing)
+    if (!getMapValue(doubleNameMap_[i], variableId[2], index3) && throw_not_existing)
     {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId + "_Z", this);
+      throw DoesNotExistingVariableExceptionUtils(i, variableId[2], this);
     }
 
     if ((index1 >= 0) && (index2 >= 0) && (index3 >= 0))
     {
       Eigen::Vector3d v(doubleValues_[index1][i], doubleValues_[index2][i],
                         doubleValues_[index3][i]);
-      nanDetectedEigen(v);
+      //      nanDetectedEigen(v);
+      for (size_t i = 0; i < 3; ++i)
+      {
+        if (std::isnan(v[i]) || std::isinf(v[i]))
+        {
+          ROS_WARN_STREAM("found nan while parsing variable: " << variableId[i]);
+          v[i] = 0.;
+        }
+      }
       value.push_back(v);
     }
   }
 }
+
 
 void IntrospectionBagReader::getVariable(const std::string &variable_id,
                                          std::vector<Eigen::Quaterniond> &value,
