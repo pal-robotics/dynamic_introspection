@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2018-04-09)
+------------------
 * Merge branch 'more_helpers' into 'erbium-devel'
   added more helper utils
   See merge request control/dynamic_introspection!4
