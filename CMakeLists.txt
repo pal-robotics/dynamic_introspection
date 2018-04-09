@@ -12,8 +12,7 @@ set(CATKIN_COMPONENTS
   control_toolbox
   visualization_msgs
   backward_ros
-  std_msgs
-  pal_utils)
+  std_msgs)
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMPONENTS})
 
