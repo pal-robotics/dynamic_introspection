@@ -2,6 +2,26 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'more_helpers' into 'erbium-devel'
+  added more helper utils
+  See merge request control/dynamic_introspection!4
+* added more helpers
+* added more helper utils
+* 1.0.2
+* updated changelog
+* Merge branch 'concurrency' into 'erbium-devel'
+  Concurrency
+  See merge request control/dynamic_introspection!3
+* added missing pal_utils depend
+* fixed merge
+* fixed utils
+* added support for intermidient logged variables
+* Merge branch 'add-stamp' into erbium-devel
+* Add timestamp to DynamicIntrospection message
+* Contributors: Hilario Tome, Victor Lopez
+
 1.0.1 (2018-03-23)
 ------------------
 * Merge branch 'header_stamp' into 'erbium-devel'
