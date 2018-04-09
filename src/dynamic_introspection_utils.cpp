@@ -2,7 +2,6 @@
 #include <rosbag/view.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <boost/foreach.hpp>
-#include <pal_utils/nan_detector.h>
 
 #define foreach BOOST_FOREACH
 
