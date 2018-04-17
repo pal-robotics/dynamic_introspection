@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2018-04-18)
+------------------
 * Merge branch 'find-eigen3' into 'erbium-devel'
   Find Eigen3
   See merge request control/dynamic_introspection!6
