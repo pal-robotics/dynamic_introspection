@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(dynamic_introspection)
 
 find_package(cmake_modules REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 set(CATKIN_COMPONENTS 
   roscpp
@@ -31,13 +31,13 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS ${CATKIN_COMPONENTS}
-  DEPENDS Eigen
+  DEPENDS EIGEN3
   )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
   )
 
 add_library(${PROJECT_NAME} src/dynamic_introspection.cpp src/dynamic_introspection_utils.cpp)
