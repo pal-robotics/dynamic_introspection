@@ -2,6 +2,19 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'find-eigen3' into 'erbium-devel'
+  Find Eigen3
+  See merge request control/dynamic_introspection!6
+* Find Eigen3
+  The find we're using is in cmake_modules and is deprecated
+* Merge branch 'removed_pal_utils' into 'erbium-devel'
+  removed pal_utils
+  See merge request control/dynamic_introspection!5
+* removed pal_utils
+* Contributors: Hilario Tome, Victor Lopez
+
 1.0.3 (2018-04-09)
 ------------------
 * Merge branch 'more_helpers' into 'erbium-devel'
