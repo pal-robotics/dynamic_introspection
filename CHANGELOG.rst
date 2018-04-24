@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.5 (2018-04-25)
+------------------
 * Merge branch 'ndebug' into 'erbium-devel'
   ignore exception if ndegug set
   See merge request control/dynamic_introspection!7
