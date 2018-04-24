@@ -277,7 +277,11 @@ void DynamicIntrospection::registerVariable(const double *variable, const std::s
       contains(registered_data_.registeredBool_, id) ||
       contains(registered_data_.registeredMarkers_, id))
   {
+#if !defined(NDEBUG)
     throw ExistingVariableException(id, this);
+#else
+    ROS_ERROR_STREAM("Registering an existing variable: " << id);
+#endif
   }
   else
   {
