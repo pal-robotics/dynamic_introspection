@@ -2,6 +2,17 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'ndebug' into 'erbium-devel'
+  ignore exception if ndegug set
+  See merge request control/dynamic_introspection!7
+* Enforce add exported targets dependencies
+* added missing ndegug
+* added verbose in case ndebug set
+* ignore exception if ndegug set
+* Contributors: Hilario Tome, Victor Lopez
+
 1.0.4 (2018-04-18)
 ------------------
 * Merge branch 'find-eigen3' into 'erbium-devel'
