@@ -217,7 +217,6 @@ void DynamicIntrospection::publishDataTopicRT()
 
 void DynamicIntrospection::generateMessage()
 {
-
   introspectionMessage_.header.stamp = ros::Time::now();
 
   introspectionMessage_.ints.resize(registered_data_.registeredInt_.size());
@@ -264,7 +263,9 @@ void DynamicIntrospection::registerVariable(const int *variable, const std::stri
       contains(registered_data_.registeredBool_, id) ||
       contains(registered_data_.registeredMarkers_, id))
   {
+#if !defined(NDEBUG)
     throw ExistingVariableException(id, this);
+#endif
   }
   else
   {
@@ -325,7 +326,9 @@ void DynamicIntrospection::registerVariable(const bool *variable, const std::str
       contains(registered_data_.registeredBool_, id) ||
       contains(registered_data_.registeredMarkers_, id))
   {
+#if !defined(NDEBUG)
     throw ExistingVariableException(id, this);
+#endif
   }
   else
   {
@@ -347,7 +350,9 @@ void DynamicIntrospection::registerVariable(const visualization_msgs::MarkerArra
       contains(registered_data_.registeredBool_, id) ||
       contains(registered_data_.registeredMarkers_, id))
   {
+#if !defined(NDEBUG)
     throw ExistingVariableException(id, this);
+#endif
   }
   else
   {
@@ -372,7 +377,9 @@ void DynamicIntrospection::unRegisterVariable(const std::string &id)
         !contains(registered_data_.registeredBool_, id) ||
         !contains(registered_data_.registeredMarkers_, id)))
   {
+#if !defined(NDEBUG)
     throw DoesNotExistingVariableException(id, this);
+#endif
   }
   else
   {
@@ -403,7 +410,9 @@ void DynamicIntrospection::unRegisterVariable(const std::string &id)
     }
     else
     {
+#if !defined(NDEBUG)
       throw DoesNotExistingVariableException(id, this);
+#endif
     }
     ROS_DEBUG_STREAM("Deleting int: " << id);
   }
