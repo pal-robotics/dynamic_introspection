@@ -116,7 +116,7 @@ public:
 
   void openBag(std::string fileName);
 
-  const DynamicIntrospectionData *getDataPtr()
+  const DynamicIntrospectionData *getDataPtr() const
   {
     return &registered_data_;
   }
