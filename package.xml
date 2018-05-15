@@ -20,6 +20,7 @@
   <depend>eigen</depend>
   <depend>backward_ros</depend>
   <depend>std_msgs</depend>
+  <depend>pal_utils</depend>
 
   <export>
      <dynamic_introspection plugin="${prefix}/test/testPlugins.xml" />
