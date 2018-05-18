@@ -2,7 +2,6 @@
 #include <rosbag/view.h>
 #include <dynamic_introspection/IntrospectionMsg.h>
 #include <boost/foreach.hpp>
-#include <pal_utils/exception_utils.h>
 
 #define foreach BOOST_FOREACH
 
@@ -157,7 +156,7 @@ unsigned int IntrospectionBagReader::getNumberMessages()
 void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<bool> &value, const bool throw_not_existing)
 {
-  PAL_ASSERT_PERSIST_EQUAL(value.size(), 0);
+  assert(value.size() == 0);
 
   value.reserve(nMessages_);
 
@@ -178,7 +177,7 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
 void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<double> &value, const bool throw_not_existing)
 {
-  PAL_ASSERT_PERSIST_EQUAL(value.size(), 0);
+  assert(value.size() == 0);
 
   value.reserve(nMessages_);
 
@@ -200,7 +199,7 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<Eigen::Vector3d> &value,
                                          const bool throw_not_existing)
 {
-  PAL_ASSERT_PERSIST_EQUAL(value.size(), 0);
+  assert(value.size() == 0);
 
   std::vector<std::string> ids;
   ids.push_back(variableId + "_X");
@@ -213,7 +212,7 @@ void IntrospectionBagReader::getVariable(const std::vector<std::string> &variabl
                                          std::vector<Eigen::Vector3d> &value,
                                          const bool throw_not_existing)
 {
-  PAL_ASSERT_PERSIST_EQUAL(value.size(), 0);
+  assert(value.size() == 0);
   value.reserve(nMessages_);
 
   assert(variableId.size() == 3);
@@ -259,7 +258,7 @@ void IntrospectionBagReader::getVariable(const std::string &variable_id,
                                          std::vector<Eigen::Quaterniond> &value,
                                          const bool throw_not_existing)
 {
-  PAL_ASSERT_PERSIST_EQUAL(value.size(), 0);
+  assert(value.size() == 0);
   value.reserve(nMessages_);
 
   for (size_t i = 0; i < nMessages_; ++i)
