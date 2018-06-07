@@ -2,6 +2,28 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'online_utils' into 'erbium-devel'
+  added online utils
+  See merge request control/dynamic_introspection!11
+* reenabled get number of messages
+* added online utils
+* Merge branch 'more_helpers' into 'erbium-devel'
+  cleanup of matlab helpers
+  See merge request control/dynamic_introspection!10
+* cleanup of matlab helpers
+* Merge branch 'removed_pal_utils' into 'erbium-devel'
+  removed pal utils dependency
+  See merge request control/dynamic_introspection!9
+* removed pal utils dependency
+* Merge branch 'extra_asserts_utils' into 'erbium-devel'
+  added extra asserts introspection utils
+  See merge request control/dynamic_introspection!8
+* added extra asserts introspection utils
+* Add dependency for singleton_test
+* Contributors: Hilario Tome, Victor Lopez
+
 1.0.5 (2018-04-25)
 ------------------
 * Merge branch 'ndebug' into 'erbium-devel'
