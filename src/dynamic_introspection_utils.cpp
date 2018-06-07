@@ -175,10 +175,10 @@ void IntrospectionBagReader::addMsg(const dynamic_introspection::IntrospectionMs
   ++counter_;
 }
 
-// unsigned int IntrospectionBagReader::getNumberMessages()
-//{
-//  return counter_;
-//}
+unsigned int IntrospectionBagReader::getNumberMessages()
+{
+  return counter_;
+}
 
 void IntrospectionBagReader::getVariable(const std::string &variableId,
                                          std::vector<bool> &value, const bool throw_not_existing)

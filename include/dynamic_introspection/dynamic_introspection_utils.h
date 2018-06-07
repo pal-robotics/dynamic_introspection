@@ -23,7 +23,7 @@ public:
 
   void readBag(rosbag::Bag &bag);
 
-//  unsigned int getNumberMessages();
+  unsigned int getNumberMessages();
 
   void getVariable(const std::string &variableId, std::vector<bool> &value,
                    const bool throw_not_existing = true);
@@ -56,7 +56,7 @@ private:
   unsigned int counter_;
   std::string introspection_topic_name_;
 
-//  unsigned int n_messages_;
+  //  unsigned int n_messages_;
 
   std::vector<std::vector<int>> intValues_;
   std::vector<std::vector<double>> doubleValues_;
