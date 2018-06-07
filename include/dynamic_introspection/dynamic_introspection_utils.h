@@ -11,15 +11,19 @@ namespace dynamic_introspection
 class IntrospectionBagReader
 {
 public:
+  IntrospectionBagReader();
+
   IntrospectionBagReader(const std::string &packageName, const std::string &bagFileName,
                          const std::string introspection_topic_name);
 
   IntrospectionBagReader(const std::string &bagFileName,
                          const std::string introspection_topic_name);
 
+  virtual ~IntrospectionBagReader();
+
   void readBag(rosbag::Bag &bag);
 
-  unsigned int getNumberMessages();
+//  unsigned int getNumberMessages();
 
   void getVariable(const std::string &variableId, std::vector<bool> &value,
                    const bool throw_not_existing = true);
@@ -40,14 +44,19 @@ public:
   //  &value,
   //                   const bool throw_not_existing = true);
 
+
+  void addMsg(const dynamic_introspection::IntrospectionMsg::ConstPtr s);
+
   std::vector<std::map<std::string, int>> intNameMap_;
   std::vector<std::map<std::string, int>> doubleNameMap_;
   std::vector<std::map<std::string, int>> boolNameMap_;
 
 private:
+  bool first_msg_;
+  unsigned int counter_;
   std::string introspection_topic_name_;
 
-  unsigned int nMessages_;
+//  unsigned int n_messages_;
 
   std::vector<std::vector<int>> intValues_;
   std::vector<std::vector<double>> doubleValues_;
