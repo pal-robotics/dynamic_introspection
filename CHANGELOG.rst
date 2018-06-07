@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.6 (2018-06-07)
+------------------
 * Merge branch 'online_utils' into 'erbium-devel'
   added online utils
   See merge request control/dynamic_introspection!11
