@@ -39,15 +39,19 @@ struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
       ss << "   " << it->first << std::endl;
     }
 
-    for (auto it = br_->intNameMap_[index_].begin(); it != br_->intNameMap_[index_].end(); ++it)
+    /*
+    for (auto it = br_->intNameMap_[index_].begin(); it != br_->intNameMap_[index_].end();
+    ++it)
     {
       ss << "   " << it->first << std::endl;
     }
 
-    for (auto it = br_->boolNameMap_[index_].begin(); it != br_->boolNameMap_[index_].end(); ++it)
+    for (auto it = br_->boolNameMap_[index_].begin(); it !=
+    br_->boolNameMap_[index_].end(); ++it)
     {
       ss << "   " << it->first << std::endl;
     }
+    */
 
     ROS_ERROR_STREAM(ss.str());
     return ss.str().c_str();
@@ -58,10 +62,18 @@ struct DoesNotExistingVariableExceptionUtils : public std::runtime_error
   IntrospectionBagReader *br_;
 };
 
+IntrospectionBagReader::IntrospectionBagReader() : counter_(0), first_msg_(true)
+{
+}
+
+IntrospectionBagReader::~IntrospectionBagReader()
+{
+}
+
 IntrospectionBagReader::IntrospectionBagReader(const std::string &packageName,
                                                const std::string &bagFileName,
                                                const std::string introspection_topic_name)
-  : introspection_topic_name_(introspection_topic_name)
+  : introspection_topic_name_(introspection_topic_name), counter_(0), first_msg_(true)
 {
   ROS_INFO_STREAM("Reading bag: " << bagFileName);
 
@@ -73,7 +85,7 @@ IntrospectionBagReader::IntrospectionBagReader(const std::string &packageName,
 
 IntrospectionBagReader::IntrospectionBagReader(const std::string &bagFileName,
                                                const std::string introspection_topic_name)
-  : introspection_topic_name_(introspection_topic_name)
+  : introspection_topic_name_(introspection_topic_name), counter_(0), first_msg_(true)
 {
   ROS_INFO_STREAM("Reading bag: " << bagFileName);
 
@@ -90,67 +102,82 @@ void IntrospectionBagReader::readBag(rosbag::Bag &bag)
 
   rosbag::View view(bag, rosbag::TopicQuery(topics));
 
-  nMessages_ = view.size();
+  unsigned int n_messages_ = view.size();
 
-  ROS_INFO_STREAM("Number of messages: " << nMessages_);
+  ROS_INFO_STREAM("Number of messages: " << n_messages_);
 
-  int counter = 0;
-
-  boolNameMap_.resize(nMessages_);
-  intNameMap_.resize(nMessages_);
-  doubleNameMap_.resize(nMessages_);
+  //  boolNameMap_.reserve(n_messages_);
+  //  intNameMap_.reserve(n_messages_);
+  //  doubleNameMap_.reserve(n_messages_);
 
   foreach (rosbag::MessageInstance const m, view)
   {
     dynamic_introspection::IntrospectionMsg::ConstPtr s =
         m.instantiate<dynamic_introspection::IntrospectionMsg>();
 
-    boolValues_.resize(s->bools.size());
-    for (size_t i = 0; i < s->bools.size(); ++i)
-    {
-      boolValues_[i].reserve(nMessages_);
-      boolNameMap_[counter][s->bools[i].name] = i;
-    }
-    intValues_.resize(s->ints.size());
-    for (size_t i = 0; i < s->ints.size(); ++i)
-    {
-      intValues_[i].reserve(nMessages_);
-      intNameMap_[counter][s->ints[i].name] = i;
-    }
-    doubleValues_.resize(s->doubles.size());
-    for (size_t i = 0; i < s->doubles.size(); ++i)
-    {
-      doubleValues_[i].reserve(nMessages_);
-      doubleNameMap_[counter][s->doubles[i].name] = i;
-    }
+    addMsg(s);
 
-    for (size_t i = 0; i < boolValues_.size(); ++i)
-    {
-      boolValues_[i][counter] = s->bools[i].value;
-    }
-
-    for (size_t i = 0; i < intValues_.size(); ++i)
-    {
-      intValues_[i][counter] = s->ints[i].value;
-    }
-
-    for (size_t i = 0; i < doubleValues_.size(); ++i)
-    {
-      doubleValues_[i][counter] = s->doubles[i].value;
-    }
-
-    ++counter;
     ROS_INFO_STREAM_THROTTLE(1.0,
                              "Reading percentage of data: "
-                                 << ((double)counter / (double)nMessages_) * 100. << " %");
+                                 << ((double)counter_ / (double)n_messages_) * 100. << " %");
   }
 
   ROS_INFO_STREAM("Finished reading bag");
 }
 
+void IntrospectionBagReader::addMsg(const dynamic_introspection::IntrospectionMsg::ConstPtr s)
+{
+  if (first_msg_)
+  {
+    boolValues_.resize(s->bools.size());
+    intValues_.resize(s->ints.size());
+    doubleValues_.resize(s->doubles.size());
+
+    first_msg_ = false;
+  }
+
+  boolNameMap_.push_back(std::map<std::string, int>());
+  doubleNameMap_.push_back(std::map<std::string, int>());
+  intNameMap_.push_back(std::map<std::string, int>());
+
+  for (size_t i = 0; i < s->bools.size(); ++i)
+  {
+    // boolValues_[i].reserve(n_messages_);
+    boolNameMap_[counter_][s->bools[i].name] = i;
+  }
+  for (size_t i = 0; i < s->ints.size(); ++i)
+  {
+    // intValues_[i].reserve(n_messages_);
+    intNameMap_[counter_][s->ints[i].name] = i;
+  }
+
+  for (size_t i = 0; i < s->doubles.size(); ++i)
+  {
+    // doubleValues_[i].reserve(n_messages_);
+    doubleNameMap_[counter_][s->doubles[i].name] = i;
+  }
+
+  for (size_t i = 0; i < s->bools.size(); ++i)
+  {
+    boolValues_[i].push_back(s->bools[i].value);
+  }
+
+  for (size_t i = 0; i < s->ints.size(); ++i)
+  {
+    intValues_[i].push_back(s->ints[i].value);
+  }
+
+  for (size_t i = 0; i < s->doubles.size(); ++i)
+  {
+    doubleValues_[i].push_back(s->doubles[i].value);
+  }
+
+  ++counter_;
+}
+
 unsigned int IntrospectionBagReader::getNumberMessages()
 {
-  return nMessages_;
+  return counter_;
 }
 
 void IntrospectionBagReader::getVariable(const std::string &variableId,
@@ -158,9 +185,9 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
 {
   assert(value.size() == 0);
 
-  value.reserve(nMessages_);
+  value.reserve(boolNameMap_.size());
 
-  for (size_t i = 0; i < nMessages_; ++i)
+  for (size_t i = 0; i < boolNameMap_.size(); ++i)
   {
     int index = -1;
     if (!getMapValue(boolNameMap_[i], variableId, index) && throw_not_existing)
@@ -179,9 +206,9 @@ void IntrospectionBagReader::getVariable(const std::string &variableId,
 {
   assert(value.size() == 0);
 
-  value.reserve(nMessages_);
+  value.reserve(doubleNameMap_.size());
 
-  for (size_t i = 0; i < nMessages_; ++i)
+  for (size_t i = 0; i < doubleNameMap_.size(); ++i)
   {
     int index = -1;
     if (!getMapValue(doubleNameMap_[i], variableId, index) && throw_not_existing)
@@ -213,11 +240,11 @@ void IntrospectionBagReader::getVariable(const std::vector<std::string> &variabl
                                          const bool throw_not_existing)
 {
   assert(value.size() == 0);
-  value.reserve(nMessages_);
+  value.reserve(doubleNameMap_.size());
 
   assert(variableId.size() == 3);
 
-  for (size_t i = 0; i < nMessages_; ++i)
+  for (size_t i = 0; i < doubleNameMap_.size(); ++i)
   {
     int index1 = -1;
     if (!getMapValue(doubleNameMap_[i], variableId[0], index1) && throw_not_existing)
@@ -259,9 +286,9 @@ void IntrospectionBagReader::getVariable(const std::string &variable_id,
                                          const bool throw_not_existing)
 {
   assert(value.size() == 0);
-  value.reserve(nMessages_);
+  value.reserve(doubleNameMap_.size());
 
-  for (size_t i = 0; i < nMessages_; ++i)
+  for (size_t i = 0; i < doubleNameMap_.size(); ++i)
   {
     int index1 = -1;
     if (!getMapValue(doubleNameMap_[i], variable_id + "_QX", index1) && throw_not_existing)
@@ -299,10 +326,10 @@ void IntrospectionBagReader::getVariable(const std::vector<std::string> &names,
                                          const bool throw_not_existing)
 {
   Eigen::VectorXd temp(names.size());
-  value.reserve(nMessages_);
+  value.reserve(n_messages_);
   for (size_t i = 0; i < names.size(); ++i)
   {
-    assert(nMessages_ == value[i].size());
+    assert(n_messages_ == value[i].size());
 
     int index;
     if (!getMapValue(doubleNameMap_, names[i], index) && throw_not_existing)
@@ -310,7 +337,7 @@ void IntrospectionBagReader::getVariable(const std::vector<std::string> &names,
       throw DoesNotExistingVariableExceptionUtils(names[i], this);
     }
 
-    for (size_t j = 0; j < nMessages_; ++j)
+    for (size_t j = 0; j < n_messages_; ++j)
     {
       temp(j) = doubleValues_[i][j];
     }

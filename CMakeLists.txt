@@ -40,7 +40,9 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   )
 
-add_library(${PROJECT_NAME} src/dynamic_introspection.cpp src/dynamic_introspection_utils.cpp)
+add_library(${PROJECT_NAME} src/dynamic_introspection.cpp
+                            src/dynamic_introspection_utils.cpp
+                            src/introspection_online_utils.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
