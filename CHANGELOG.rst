@@ -2,6 +2,14 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'online_write_bag' into 'erbium-devel'
+  added dumping bag
+  See merge request control/dynamic_introspection!12
+* added dumping bag
+* Contributors: Hilario Tome
+
 1.0.6 (2018-06-07)
 ------------------
 * Merge branch 'online_utils' into 'erbium-devel'
