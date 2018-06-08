@@ -26,5 +26,18 @@ void IntrospectionOnlineReader::stop()
 void IntrospectionOnlineReader::introspectionCB(const IntrospectionMsgConstPtr &msg)
 {
   addMsg(msg);
+  read_messages_.push_back(*msg.get());
+}
+
+void IntrospectionOnlineReader::dumpRosBag(const std::string &bag_name)
+{
+  rosbag::Bag bag;
+  bag.open(bag_name, rosbag::bagmode::Write);
+
+  for (size_t i = 0; i < read_messages_.size(); ++i)
+  {
+    bag.write("/introspection_data", read_messages_[i].header.stamp, read_messages_[i]);
+  }
+  bag.close();
 }
 }
