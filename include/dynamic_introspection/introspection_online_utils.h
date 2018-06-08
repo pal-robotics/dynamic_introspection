@@ -20,6 +20,8 @@ public:
 
   void stop();
 
+  void dumpRosBag(const std::string &bag_name);
+
 private:
   ros::NodeHandle nh_;
   ros::CallbackQueue cb_queue_;
@@ -27,6 +29,8 @@ private:
   ros::Subscriber sub_;
 
   void introspectionCB(const IntrospectionMsgConstPtr &msg);
+
+  std::vector<IntrospectionMsg> read_messages_;
 };
 }
 
