@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <rosbag/bag.h>
-#include <dynamic_introspection/IntrospectionMsg.h>
+#include <pal_statistics_msgs/Statistics.h>
 #include <Eigen/Dense>
 
 namespace dynamic_introspection
@@ -45,11 +45,9 @@ public:
   //                   const bool throw_not_existing = true);
 
 
-  void addMsg(const dynamic_introspection::IntrospectionMsg::ConstPtr s);
+  void addMsg(const pal_statistics_msgs::StatisticsConstPtr s);
 
-  std::vector<std::map<std::string, int>> intNameMap_;
   std::vector<std::map<std::string, int>> doubleNameMap_;
-  std::vector<std::map<std::string, int>> boolNameMap_;
 
 private:
   bool first_msg_;
@@ -58,9 +56,7 @@ private:
 
   //  unsigned int n_messages_;
 
-  std::vector<std::vector<int>> intValues_;
   std::vector<std::vector<double>> doubleValues_;
-  std::vector<std::vector<bool>> boolValues_;
 };
 }
 

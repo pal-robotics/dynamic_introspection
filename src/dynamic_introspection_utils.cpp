@@ -112,8 +112,8 @@ void IntrospectionBagReader::readBag(rosbag::Bag &bag)
 
   foreach (rosbag::MessageInstance const m, view)
   {
-    dynamic_introspection::IntrospectionMsg::ConstPtr s =
-        m.instantiate<dynamic_introspection::IntrospectionMsg>();
+    pal_statistics_msgs::Statistics::ConstPtr s =
+        m.instantiate<pal_statistics_msgs::Statistics>();
 
     addMsg(s);
 
@@ -125,51 +125,27 @@ void IntrospectionBagReader::readBag(rosbag::Bag &bag)
   ROS_INFO_STREAM("Finished reading bag");
 }
 
-void IntrospectionBagReader::addMsg(const dynamic_introspection::IntrospectionMsg::ConstPtr s)
+void IntrospectionBagReader::addMsg(const pal_statistics_msgs::Statistics::ConstPtr s)
 {
   if (first_msg_)
   {
-    boolValues_.resize(s->bools.size());
-    intValues_.resize(s->ints.size());
-    doubleValues_.resize(s->doubles.size());
+    doubleValues_.resize(s->statistics.size());
 
     first_msg_ = false;
   }
 
-  boolNameMap_.push_back(std::map<std::string, int>());
   doubleNameMap_.push_back(std::map<std::string, int>());
-  intNameMap_.push_back(std::map<std::string, int>());
 
-  for (size_t i = 0; i < s->bools.size(); ++i)
-  {
-    // boolValues_[i].reserve(n_messages_);
-    boolNameMap_[counter_][s->bools[i].name] = i;
-  }
-  for (size_t i = 0; i < s->ints.size(); ++i)
-  {
-    // intValues_[i].reserve(n_messages_);
-    intNameMap_[counter_][s->ints[i].name] = i;
-  }
-
-  for (size_t i = 0; i < s->doubles.size(); ++i)
+  for (size_t i = 0; i < s->statistics.size(); ++i)
   {
     // doubleValues_[i].reserve(n_messages_);
-    doubleNameMap_[counter_][s->doubles[i].name] = i;
+    doubleNameMap_[counter_][s->statistics[i].name] = i;
   }
 
-  for (size_t i = 0; i < s->bools.size(); ++i)
-  {
-    boolValues_[i].push_back(s->bools[i].value);
-  }
 
-  for (size_t i = 0; i < s->ints.size(); ++i)
+  for (size_t i = 0; i < s->statistics.size(); ++i)
   {
-    intValues_[i].push_back(s->ints[i].value);
-  }
-
-  for (size_t i = 0; i < s->doubles.size(); ++i)
-  {
-    doubleValues_[i].push_back(s->doubles[i].value);
+    doubleValues_[i].push_back(s->statistics[i].value);
   }
 
   ++counter_;
@@ -178,27 +154,6 @@ void IntrospectionBagReader::addMsg(const dynamic_introspection::IntrospectionMs
 unsigned int IntrospectionBagReader::getNumberMessages()
 {
   return counter_;
-}
-
-void IntrospectionBagReader::getVariable(const std::string &variableId,
-                                         std::vector<bool> &value, const bool throw_not_existing)
-{
-  assert(value.size() == 0);
-
-  value.reserve(boolNameMap_.size());
-
-  for (size_t i = 0; i < boolNameMap_.size(); ++i)
-  {
-    int index = -1;
-    if (!getMapValue(boolNameMap_[i], variableId, index) && throw_not_existing)
-    {
-      throw DoesNotExistingVariableExceptionUtils(i, variableId, this);
-    }
-    if (index >= 0)
-    {
-      value.push_back(boolValues_[index][i]);
-    }
-  }
 }
 
 void IntrospectionBagReader::getVariable(const std::string &variableId,
