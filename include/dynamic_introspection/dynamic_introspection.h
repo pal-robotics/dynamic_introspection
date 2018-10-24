@@ -14,11 +14,11 @@
 #include <rosbag/bag.h>
 #include <Eigen/Dense>
 
-namespace pal
+namespace pal_statistics
 {
 template <>
 inline IdType customRegister(StatisticsRegistry &registry, const std::string &name,
-                             Eigen::Vector3d *variable, RegistrationsRAII *bookkeeping,
+                             const Eigen::Vector3d *variable, RegistrationsRAII *bookkeeping,
                              bool enabled)
 {
   /// only one id is returned, unregistration should be done with RegistrationRAII
@@ -31,7 +31,7 @@ inline IdType customRegister(StatisticsRegistry &registry, const std::string &na
 
 template <>
 inline IdType customRegister(StatisticsRegistry &registry, const std::string &name,
-                             Eigen::Quaterniond *variable, RegistrationsRAII *bookkeeping,
+                             const Eigen::Quaterniond *variable, RegistrationsRAII *bookkeeping,
                              bool enabled)
 {
   /// only one id is returned, unregistration should be done with RegistrationRAII
@@ -43,7 +43,7 @@ inline IdType customRegister(StatisticsRegistry &registry, const std::string &na
 }
 
 // All these are hacks to preserve an old API
-namespace statistics_bag_hack
+namespace bag_hack
 {
 static boost::shared_ptr<rosbag::Bag> bag_;
 inline void statisticsOpenBag(const std::string &filename)
@@ -63,16 +63,16 @@ inline void statististicsWriteDataToBag()
   bag_->write("/introspection_data", ros::Time::now(),
               getRegistry("/introspection_data")->createMsg());
 }
-}  // namespace statistics_bag_hack
+}  // namespace bag_hack
 } // namespace pal
 
 #define OPEN_BAG(BAG_NAME)                                            \
-   pal::statistics_bag_hack::statisticsOpenBag(BAG_NAME);               \
+   pal_statistics::bag_hack::statisticsOpenBag(BAG_NAME);               \
 
 #define PUBLISH_DEBUG_DATA_BAG                                        \
-   pal::statistics_bag_hack::statististicsWriteDataToBag();                \
+   pal_statistics::bag_hack::statististicsWriteDataToBag();                \
 
 #define CLOSE_BAG                                                     \
-   pal::statistics_bag_hack::statisticsCloseBag();                      \
+   pal_statistics::bag_hack::statisticsCloseBag();                      \
 
 #endif
