@@ -2,6 +2,15 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'migrate-to-statistics' into 'erbium-devel'
+  Migrate to statistics
+  See merge request control/dynamic_introspection!13
+* Use new pal_statistics API
+* Migrate to statistics
+* Contributors: Victor Lopez
+
 1.0.7 (2018-06-08)
 ------------------
 * Merge branch 'online_write_bag' into 'erbium-devel'
