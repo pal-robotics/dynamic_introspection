@@ -8,8 +8,7 @@ set(CATKIN_COMPONENTS
   roscpp
   message_generation
   rosbag
-  pluginlib
-  control_toolbox
+  pal_statistics
   visualization_msgs
   backward_ros
   std_msgs)
@@ -40,25 +39,24 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   )
 
-add_library(${PROJECT_NAME} src/dynamic_introspection.cpp
-                            src/dynamic_introspection_utils.cpp
+add_library(${PROJECT_NAME} src/dynamic_introspection_utils.cpp
                             src/introspection_online_utils.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(dynamic_introspection_example test/dynamic_introspection_example.cpp)
-target_link_libraries(dynamic_introspection_example ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_executable(dynamic_introspection_example test/dynamic_introspection_example.cpp)
+#target_link_libraries(dynamic_introspection_example ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(introspection_bag_analyzer src/introspection_bag_analyzer.cpp)
-target_link_libraries(introspection_bag_analyzer ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_executable(introspection_bag_analyzer src/introspection_bag_analyzer.cpp)
+#target_link_libraries(introspection_bag_analyzer ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(dynamic_introspection_bag_example test/dynamic_introspection_bag_example.cpp)
-target_link_libraries(dynamic_introspection_bag_example ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_executable(dynamic_introspection_bag_example test/dynamic_introspection_bag_example.cpp)
+#target_link_libraries(dynamic_introspection_bag_example ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(dynamic_introspection_rosbag_recording_server src/dynamic_introspection_rosbag_recording_server.cpp)
-target_link_libraries(dynamic_introspection_rosbag_recording_server ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_executable(dynamic_introspection_rosbag_recording_server src/dynamic_introspection_rosbag_recording_server.cpp)
+#target_link_libraries(dynamic_introspection_rosbag_recording_server ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_subdirectory(test)
+#add_subdirectory(test)
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

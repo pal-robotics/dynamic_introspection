@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <dynamic_introspection/dynamic_introspection_utils.h>
-#include <dynamic_introspection/IntrospectionMsg.h>
+#include <pal_statistics_msgs/Statistics.h>
 #include <boost/scoped_ptr.hpp>
 #include <ros/callback_queue.h>
 
@@ -28,9 +28,9 @@ private:
   boost::scoped_ptr<ros::AsyncSpinner> spinner_;
   ros::Subscriber sub_;
 
-  void introspectionCB(const IntrospectionMsgConstPtr &msg);
+  void introspectionCB(const pal_statistics_msgs::StatisticsConstPtr &msg);
 
-  std::vector<IntrospectionMsg> read_messages_;
+  std::vector<pal_statistics_msgs::Statistics> read_messages_;
 };
 }
 

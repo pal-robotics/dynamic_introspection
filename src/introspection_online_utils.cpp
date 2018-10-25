@@ -23,7 +23,7 @@ void IntrospectionOnlineReader::stop()
   spinner_->stop();
 }
 
-void IntrospectionOnlineReader::introspectionCB(const IntrospectionMsgConstPtr &msg)
+void IntrospectionOnlineReader::introspectionCB(const pal_statistics_msgs::StatisticsConstPtr &msg)
 {
   addMsg(msg);
   read_messages_.push_back(*msg.get());
