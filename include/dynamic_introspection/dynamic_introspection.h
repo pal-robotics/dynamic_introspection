@@ -28,6 +28,17 @@ inline IdType customRegister(StatisticsRegistry &registry, const std::string &na
   return registry.registerVariable(name + "_Z", &variable->z(), bookkeeping, enabled);  
 }
 
+template <>
+inline IdType customRegister(StatisticsRegistry &registry, const std::string &name,
+                             const Eigen::Vector2d *variable, RegistrationsRAII *bookkeeping,
+                             bool enabled)
+{
+  /// only one id is returned, unregistration should be done with RegistrationRAII
+  /// or vairable name
+  registry.registerVariable(name + "_X", &variable->x(), bookkeeping, enabled);
+  return registry.registerVariable(name + "_Y", &variable->y(), bookkeeping, enabled);
+}
+
 
 template <>
 inline IdType customRegister(StatisticsRegistry &registry, const std::string &name,
