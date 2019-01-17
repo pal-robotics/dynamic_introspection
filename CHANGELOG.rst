@@ -2,6 +2,14 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch '2d_vectors' into 'erbium-devel'
+  added 2d vector helpers
+  See merge request control/dynamic_introspection!14
+* added 2d vector helpers
+* Contributors: Hilario Tome
+
 1.0.8 (2018-10-25)
 ------------------
 * Merge branch 'migrate-to-statistics' into 'erbium-devel'
