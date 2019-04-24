@@ -25,7 +25,7 @@ inline IdType customRegister(StatisticsRegistry &registry, const std::string &na
   /// or vairable name
   registry.registerVariable(name + "_X", &variable->x(), bookkeeping, enabled);
   registry.registerVariable(name + "_Y", &variable->y(), bookkeeping, enabled);
-  return registry.registerVariable(name + "_Z", &variable->z(), bookkeeping, enabled);  
+  return registry.registerVariable(name + "_Z", &variable->z(), bookkeeping, enabled);
 }
 
 template <>
@@ -71,7 +71,7 @@ inline void statisticsCloseBag()
 
 inline void statististicsWriteDataToBag()
 {
-  bag_->write("/introspection_data", ros::Time::now(),
+  bag_->write("/introspection_data/full", ros::Time::now(),
               getRegistry("/introspection_data")->createMsg());
 }
 }  // namespace bag_hack

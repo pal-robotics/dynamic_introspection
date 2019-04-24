@@ -12,7 +12,7 @@ namespace dynamic_introspection
 class IntrospectionOnlineReader : public IntrospectionBagReader
 {
 public:
-  IntrospectionOnlineReader(const std::string &topic = "/introspection_data");
+  IntrospectionOnlineReader(const std::string &topic = "/introspection_data/full");
 
   virtual ~IntrospectionOnlineReader();
 
