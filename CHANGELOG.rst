@@ -2,6 +2,14 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'new-statistics-msgs' into 'erbium-devel'
+  New statistics topic name
+  See merge request control/dynamic_introspection!16
+* New statistics topic name
+* Contributors: Victor Lopez
+
 1.0.9 (2019-01-17)
 ------------------
 * Merge branch '2d_vectors' into 'erbium-devel'
