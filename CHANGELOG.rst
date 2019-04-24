@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.10 (2019-04-24)
+-------------------
 * Merge branch 'new-statistics-msgs' into 'erbium-devel'
   New statistics topic name
   See merge request control/dynamic_introspection!16
