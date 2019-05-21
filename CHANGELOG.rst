@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.11 (2019-05-21)
+-------------------
 * Merge branch 'license-refactor' into 'erbium-devel'
   Update pal license
   See merge request control/dynamic_introspection!17
