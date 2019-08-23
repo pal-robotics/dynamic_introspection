@@ -2,6 +2,11 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add SYSTEM to include_directories and fix shadowed variable
+* Contributors: Victor Lopez
+
 1.0.11 (2019-05-21)
 -------------------
 * Merge branch 'license-refactor' into 'erbium-devel'
