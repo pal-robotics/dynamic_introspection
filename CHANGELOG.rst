@@ -2,8 +2,8 @@
 Changelog for package dynamic_introspection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.12 (2019-08-23)
+-------------------
 * Add SYSTEM to include_directories and fix shadowed variable
 * Contributors: Victor Lopez
 
